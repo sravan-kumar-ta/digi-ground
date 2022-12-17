@@ -33,12 +33,8 @@
 
             <div class="col-md-4 mb-4 mb-md-0">
                 <a class="category-item" href="#">
-                    {% if category.category_image %}
-                    <img class="img-fluid" src="#" alt="{{ category.title }}">
-                    {% else %}
-                    <img class="img-fluid" src="#" alt="{{ category.title }}">
-                    {% endif %}
-                    <strong class="category-item-title">{ category.title }}</strong>
+                    <img class="img-fluid" src="{% static 'img/cat-img.jpg' %}" alt="{{ category.title }}">
+                    <strong class="category-item-title">{{ category.title }}</strong>
                 </a>
             </div>
 
