@@ -9,3 +9,7 @@ def home(request):
         'categories': categories,
     }
     return render(request, 'products/home.html', context)
+
+
+def category(request):
+    return render(request, 'products/categories.html')
