@@ -48,7 +48,7 @@ def product_list(request, category_slug):
     return render(request, 'products/category_products.html', context)
 
 
-def filter_data(request):
+def products_filter(request):
     time.sleep(2)
     category = request.GET.getlist('category')
     minPrice = request.GET['minPrice']

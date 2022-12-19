@@ -31,7 +31,7 @@
             {% if categories %}
             {% for category in categories %}
             <div class="col-md-4 mb-4 mb-md-0">
-                <a class="category-item" href="{% url 'products:products-list' category.slug %}">
+                <a class="category-item" href="{{ category.get_url }}">
                     <img class="img-fluid" src="{% static 'img/cat-img.jpg' %}" alt="{{ category.title }}">
                     <strong class="category-item-title">{{ category.title }}</strong>
                 </a>
@@ -59,7 +59,7 @@
 
                         <div class="badge text-white badge-"></div>
 
-                        <a class="d-block" href="{% url 'products:category' product.category.slug product.slug %}">
+                        <a class="d-block" href="{{ product.get_url }}">
                             {% if product.image %}
                             <img class="img-fluid w-100" src="{{ product.image.url }}" alt="{{ product.title }}">
                             {% else %}
