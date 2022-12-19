@@ -23,7 +23,7 @@
                             {% if categories_obj %}
                                 {% for category in categories_obj %}
                                 <a class="dropdown-item border-0 transition-link text-capitalize"
-                                   href="#">{{ category.title }}
+                                   href="{% url 'products:products-list' category.slug %}">{{ category.title }}
                                 </a>
                                 {% endfor %}
                             {% endif %}

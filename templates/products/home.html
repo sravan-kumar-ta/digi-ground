@@ -30,14 +30,12 @@
         <div class="row">
             {% if categories %}
             {% for category in categories %}
-
             <div class="col-md-4 mb-4 mb-md-0">
-                <a class="category-item" href="#">
+                <a class="category-item" href="{% url 'products:products-list' category.slug %}">
                     <img class="img-fluid" src="{% static 'img/cat-img.jpg' %}" alt="{{ category.title }}">
                     <strong class="category-item-title">{{ category.title }}</strong>
                 </a>
             </div>
-
             {% endfor %}
             {% endif %}
         </div>
@@ -54,7 +52,6 @@
 
             {% if products %}
             {% for product in products %}
-
             <!-- PRODUCT-->
             <div class="col-xl-3 col-lg-4 col-sm-6">
                 <div class="product text-center">
@@ -62,22 +59,25 @@
 
                         <div class="badge text-white badge-"></div>
 
-                        <a class="d-block" href="#">
-                            {% if product.product_image %}
-                            <img class="img-fluid w-100" src="{ product.product_image.url }}" alt="{{product.title}}">
+                        <a class="d-block" href="{% url 'products:category' product.category.slug product.slug %}">
+                            {% if product.image %}
+                            <img class="img-fluid w-100" src="{{ product.image.url }}" alt="{{ product.title }}">
                             {% else %}
-                            <img class="img-fluid w-100" src="" alt="{{product.title}}">
+                            <img class="img-fluid w-100" src="{% static 'img/cat-img.jpg' %}" alt="{{ product.title }}">
                             {% endif %}
                         </a>
 
                         <div class="product-overlay">
                             <ul class="mb-0 list-inline">
-                                <li class="list-inline-item m-0 p-0"><a class="btn btn-sm btn-outline-dark" href="#"><i
-                                        class="far fa-heart"></i></a></li>
+                                <li class="list-inline-item m-0 p-0">
+                                    <a class="btn btn-sm btn-outline-dark" href="#">
+                                        <i class="far fa-heart"></i>
+                                    </a>
+                                </li>
                                 <li class="list-inline-item m-0 p-0">
                                     {% comment %}
-                                        <a class="btn btn-sm btn-dark" href="#">
-                                            Add to cart</a>
+                                    <a class="btn btn-sm btn-dark" href="#">
+                                        Add to cart</a>
                                     {% endcomment %}
 
                                     <form action="#">
@@ -89,14 +89,13 @@
                             </ul>
                         </div>
                     </div>
-                    <h6><a class="reset-anchor" href="detail.html">{ product.title }}</a></h6>
-                    <p class="small text-muted">${product.price}}</p>
+                    <h6><a class="reset-anchor" href="detail.html">{{ product.title }}</a></h6>
+                    <p class="small text-muted">{{ product.price }} &#x20B9</p>
                 </div>
             </div>
 
             {% endfor %}
             {% endif %}
-
 
         </div>
     </section>
@@ -140,7 +139,7 @@
                             </svg>
                             <div class="media-body text-left ml-3">
                                 <h6 class="text-uppercase mb-1">Festival offer</h6>
-                                <p class="text-small mb-0 text-muted">Free shipping worlwide</p>
+                                <p class="text-small mb-0 text-muted">Free shipping worldwide</p>
                             </div>
                         </div>
                     </div>

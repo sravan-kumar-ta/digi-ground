@@ -60,6 +60,7 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
 
                 'products.custom_context_processor.categories',
+                'products.custom_context_processor.get_filters',
             ],
         },
     },

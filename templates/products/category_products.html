@@ -1,0 +1,181 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<!-- Jquery -->
+<script type="text/javascript" src="{% static 'jquery.min.js' %}"></script>
+<!-- Custom Script -->
+<script type="text/javascript" src="{% static 'product-filter.js' %}"></script>
+
+<div class="container">
+    <!-- HERO SECTION-->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="h2 text-uppercase mb-0">Shop - {{ category.title }}</h1>
+                </div>
+                <div class="col-lg-6 text-lg-right">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
+                            <li class="breadcrumb-item"><a href="{% url 'products:home' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="#">Category</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">{{category.title}}</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="py-5">
+        <div class="container p-0">
+            <div class="row">
+                <!-- SHOP SIDEBAR-->
+                <div class="col-lg-3 order-2 order-lg-1">
+                    <h5 class="text-uppercase mb-4">Categories</h5>
+
+                    {% if categories_obj %}
+                    {% for cat in categories_obj %}
+                    <a href="{% url 'products:products-list' cat.slug %}">
+                        <div class="py-2 px-4 {% if category == cat %} bg-dark text-white {% else %}bg-light{% endif %} mb-3">
+                            <strong class="small text-uppercase font-weight-bold">{{cat.title}}</strong>
+                        </div>
+                    </a>
+                    {% endfor %}
+                    {% endif %}
+                    <hr>
+                    <h6 class="text-uppercase mb-4">Price range</h6>
+                    <div class="price-range mb-5" style="margin: auto">
+                        <div class="d-flex">
+                            <input type="range" class="noUi-horizontal" value="{{minMaxPrice.price__max}}"
+                                   min={{minMaxPrice.price__min}} max={{minMaxPrice.price__max}}
+                                   oninput="maxPrice.value=this.value" id="rangeInput">
+                        </div>
+                        <div class="row pt-2">
+                            <div class="col-6 d-flex align-items-center">
+                                <strong class="small font-weight-bold text-uppercase">Max&nbsp:</strong>
+                                <input type="number" style="width: 100%; margin-left: 5px; font-size: 12px"
+                                       max={{minMaxPrice.price__max}} min={{minMaxPrice.price__min}}
+                                       value="{{minMaxPrice.price__max}}" id="maxPrice">
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6 class="text-uppercase mb-3">Brands</h6>
+
+                    <form action="{% url 'products:products-list' category.slug %}" method="post">
+                        {% csrf_token %}
+                        <input type="hidden" value="{{ category.title }}" name="category">
+                        {% if brands %}
+                        {% for brand in brands %}
+                        <div class="custom-control custom-checkbox mb-1">
+                            <input class="custom-control-input filter-checkbox" data-filter="brands"
+                                   id="id-{{ brand.name }}" value="{{ brand.name }}" type="checkbox" name="checks">
+                            <label class="custom-control-label text-small" for="id-{{ brand.name }}">
+                                {{ brand.name }}
+                            </label>
+                        </div>
+                        {% endfor %}
+                        {% endif %}
+                    </form>
+                </div>
+                <!-- SHOP LISTING-->
+                <div class="col-lg-9 order-1 order-lg-2 mb-5 mb-lg-0">
+                    <div class="row mb-3 align-items-center">
+                        <div class="col-lg-6 mb-2 mb-lg-0">
+                            <p class="text-small text-muted mb-0">Showing 1–12 of 53 results</p>
+                        </div>
+                        <div class="col-lg-6">
+                            <ul class="list-inline d-flex align-items-center justify-content-lg-end mb-0">
+                                <li class="list-inline-item">
+                                    <select class="selectpicker ml-auto" id="price_sorting" data-width="200"
+                                            data-style="bs-select-form-control" data-title="Default sorting">
+                                        <option value="0">Default sorting</option>
+                                        <option value="1">Price: Low to High</option>
+                                        <option value="2">Price: High to Low</option>
+                                    </select>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <input type="hidden" value="{{ category }}" id="category">
+                    <p class="ajaxLoader">Loading...</p>
+                    <div class="row" id="filteredProducts">
+
+                        {% if products %}
+                        {% for product in products %}
+
+                        <!-- PRODUCT-->
+                        <div class="col-lg-4 col-sm-6">
+                            <div class="product text-center">
+                                <div class="mb-3 position-relative">
+
+                                    <div class="badge text-white badge-"></div>
+
+                                    <a class="d-block" href="#">
+                                        {% if product.image %}
+                                        <img class="img-fluid w-100" src="{{product.image.url}}"
+                                             alt="{{product.title}}">
+                                        {% else %}
+                                        <img class="img-fluid w-100" src="{% static 'img/product-1.jpg' %}"
+                                             alt="{{product.title}}">
+                                        {% endif %}
+                                    </a>
+
+                                    <div class="product-overlay">
+                                        <ul class="mb-0 list-inline">
+                                            <li class="list-inline-item m-0 p-0">
+                                                <a class="btn btn-sm btn-outline-dark" href="#">
+                                                    <i class="far fa-heart"></i>
+                                                </a>
+                                            </li>
+                                            <li class="list-inline-item m-0 p-0">
+                                                {% comment %}
+                                                <a class="btn btn-sm btn-dark"
+                                                   href="{% url 'store:add-to-cart' %}">
+                                                    Add to cart
+                                                </a>
+                                                {%endcomment %}
+
+                                                <form action="#">
+                                                    <input type="hidden" name="prod_id" value="{{product.id}}"
+                                                           id="product_id">
+                                                    <button type="submit" class="btn btn-sm btn-dark">Add to Cart
+                                                    </button>
+                                                </form>
+
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <h6><a class="reset-anchor" href="#">{{product.title}}</a>
+                                </h6>
+                                <p class="small text-muted">${{product.price}}</p>
+                            </div>
+                        </div>
+
+                        {% endfor %}
+                        {% endif %}
+
+
+                    </div>
+                    <!-- PAGINATION-->
+                    <nav aria-label="Page navigation example">
+                        <ul class="pagination justify-content-center justify-content-lg-end">
+                            <li class="page-item"><a class="page-link" href="#" aria-label="Previous"><span
+                                    aria-hidden="true">«</span></a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a class="page-link" href="#" aria-label="Next"><span
+                                    aria-hidden="true">»</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock content %}
