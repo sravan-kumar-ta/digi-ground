@@ -3,11 +3,6 @@
 
 {% block content %}
 
-<!-- Jquery -->
-<script type="text/javascript" src="{% static 'jquery.min.js' %}"></script>
-<!-- Custom Script -->
-<script type="text/javascript" src="{% static 'product-filter.js' %}"></script>
-
 <div class="container">
     <!-- HERO SECTION-->
     <section class="py-5 bg-light">
@@ -37,7 +32,7 @@
 
                     {% if categories_obj %}
                     {% for cat in categories_obj %}
-                    <a href="{% url 'products:products-list' cat.slug %}">
+                    <a href="{{ cat.get_url }}">
                         <div class="py-2 px-4 {% if category == cat %} bg-dark text-white {% else %}bg-light{% endif %} mb-3">
                             <strong class="small text-uppercase font-weight-bold">{{cat.title}}</strong>
                         </div>
@@ -45,64 +40,26 @@
                     {% endfor %}
                     {% endif %}
                     <hr>
-                    <h6 class="text-uppercase mb-4">Price range</h6>
-                    <div class="price-range mb-5" style="margin: auto">
-                        <div class="d-flex">
-                            <input type="range" class="noUi-horizontal" value="{{minMaxPrice.price__max}}"
-                                   min={{minMaxPrice.price__min}} max={{minMaxPrice.price__max}}
-                                   oninput="maxPrice.value=this.value" id="rangeInput">
-                        </div>
-                        <div class="row pt-2">
-                            <div class="col-6 d-flex align-items-center">
-                                <strong class="small font-weight-bold text-uppercase">Max&nbsp:</strong>
-                                <input type="number" style="width: 100%; margin-left: 5px; font-size: 12px"
-                                       max={{minMaxPrice.price__max}} min={{minMaxPrice.price__min}}
-                                       value="{{minMaxPrice.price__max}}" id="maxPrice">
-                            </div>
-                        </div>
-                    </div>
-                    <hr>
-                    <h6 class="text-uppercase mb-3">Brands</h6>
-
-                    <form action="{% url 'products:products-list' category.slug %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" value="{{ category.title }}" name="category">
-                        {% if brands %}
-                        {% for brand in brands %}
-                        <div class="custom-control custom-checkbox mb-1">
-                            <input class="custom-control-input filter-checkbox" data-filter="brands"
-                                   id="id-{{ brand.name }}" value="{{ brand.name }}" type="checkbox" name="checks">
-                            <label class="custom-control-label text-small" for="id-{{ brand.name }}">
-                                {{ brand.name }}
-                            </label>
-                        </div>
-                        {% endfor %}
-                        {% endif %}
-                    </form>
                 </div>
+
                 <!-- SHOP LISTING-->
                 <div class="col-lg-9 order-1 order-lg-2 mb-5 mb-lg-0">
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-6 mb-2 mb-lg-0">
                             <p class="text-small text-muted mb-0">Showing 1–12 of 53 results</p>
                         </div>
+                        <!-- Button trigger modal -->
                         <div class="col-lg-6">
-                            <ul class="list-inline d-flex align-items-center justify-content-lg-end mb-0">
-                                <li class="list-inline-item">
-                                    <select class="selectpicker ml-auto" id="price_sorting" data-width="200"
-                                            data-style="bs-select-form-control" data-title="Default sorting">
-                                        <option value="0">Default sorting</option>
-                                        <option value="1">Price: Low to High</option>
-                                        <option value="2">Price: High to Low</option>
-                                    </select>
-                                </li>
-                            </ul>
+                            <div class="d-flex align-items-center justify-content-lg-end mb-0">
+                                <button type="button" class="btn btn-primary" data-toggle="modal"
+                                        data-target="#exampleModalCenter">
+                                    Filter
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <input type="hidden" value="{{ category }}" id="category">
-                    <p class="ajaxLoader">Loading...</p>
-                    <div class="row" id="filteredProducts">
+                    <div class="row">
 
                         {% if products %}
                         {% for product in products %}
@@ -133,16 +90,16 @@
                                             </li>
                                             <li class="list-inline-item m-0 p-0">
                                                 {% comment %}
-                                                <a class="btn btn-sm btn-dark"
-                                                   href="{% url 'store:add-to-cart' %}">
+                                                <a class="btn btn-sm btn-dark" href="{% url 'products:add-to-cart' %}">
                                                     Add to cart
                                                 </a>
-                                                {%endcomment %}
+                                                {% endcomment %}
 
                                                 <form action="#">
                                                     <input type="hidden" name="prod_id" value="{{product.id}}"
                                                            id="product_id">
-                                                    <button type="submit" class="btn btn-sm btn-dark">Add to Cart
+                                                    <button type="submit" class="btn btn-sm btn-dark">
+                                                        Add to Cart
                                                     </button>
                                                 </form>
 
@@ -158,19 +115,27 @@
 
                         {% endfor %}
                         {% endif %}
-
-
                     </div>
+
+                    <hr>
                     <!-- PAGINATION-->
                     <nav aria-label="Page navigation example">
-                        <ul class="pagination justify-content-center justify-content-lg-end">
-                            <li class="page-item"><a class="page-link" href="#" aria-label="Previous"><span
-                                    aria-hidden="true">«</span></a></li>
+                        <ul class="pagination justify-content-center">
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Previous">
+                                    <span aria-hidden="true">«</span>
+                                </a>
+                            </li>
+
                             <li class="page-item active"><a class="page-link" href="#">1</a></li>
                             <li class="page-item"><a class="page-link" href="#">2</a></li>
                             <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#" aria-label="Next"><span
-                                    aria-hidden="true">»</span></a></li>
+
+                            <li class="page-item">
+                                <a class="page-link" href="#" aria-label="Next">
+                                    <span aria-hidden="true">»</span>
+                                </a>
+                            </li>
                         </ul>
                     </nav>
                 </div>
@@ -178,4 +143,101 @@
         </div>
     </section>
 </div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+     aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Filter products</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <div class="modal-body">
+
+                    <table class="m-auto" cellpadding="10">
+                        <tr class="border">
+                            <td class="border">
+                                <strong class="small font-weight-bold text-uppercase">Price range&nbsp:</strong>
+                            </td>
+                            <td>
+                                <div class="d-flex mb-2">
+                                    <label>Min&nbsp:</label>
+                                    <input type="number" class="form-control" name="min" value="{{min_price}}"
+                                           style="width: 50%; margin-left: 5px; font-size: 12px">
+                                </div>
+                                <div class="d-flex">
+                                    <label>Max&nbsp:</label>
+                                    <input type="number" class="form-control" name="max" value="{{max_price}}"
+                                           style="width: 50%; margin-left: 5px; font-size: 12px">
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">
+                                <strong class="small font-weight-bold text-uppercase">Brands&nbsp:</strong>
+                            </td>
+                            <td>
+                                {% if selected_brands %}
+                                    {% for brand in brands %}
+                                        <div class="custom-control custom-checkbox mb-1">
+                                            <input class="custom-control-input filter-checkbox" id="id2-{{ brand.name }}"
+                                                   value="{{ brand.name }}" type="checkbox" name="brands"
+                                                   {% if brand.name in selected_brands %} checked {% endif %}>
+                                            <label class="custom-control-label text-small" for="id2-{{ brand.name }}">
+                                                {{ brand.name }}
+                                            </label>
+                                        </div>
+
+                                    {% endfor %}
+                                {% else %}
+                                    {% for brand in brands %}
+
+                                        <div class="custom-control custom-checkbox mb-1">
+                                            <input class="custom-control-input filter-checkbox" id="id-{{ brand.name }}"
+                                                   value="{{ brand.name }}" type="checkbox" name="brands">
+                                            <label class="custom-control-label text-small" for="id-{{ brand.name }}">
+                                                {{ brand.name }}
+                                            </label>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr class="border">
+                            <td class="border">
+                                <strong class="small font-weight-bold text-uppercase">Sort by&nbsp:</strong>
+                            </td>
+                            <td>
+                                <select class="selectpicker ml-auto" name="sort" data-style="bs-select-form-control">
+                                    {% if sort_method %}
+                                    <option value="0">Default sorting</option>
+                                    <option value="1"
+                                        {% if sort_method == '1' %} selected {% endif %}>Price: Low to High</option>
+                                    <option value="2"
+                                        {% if sort_method == '2' %} selected {% endif %}>Price: High to Low</option>
+                                    {% else %}
+                                    <option value="0">Default sorting</option>
+                                    <option value="1">Price: Low to High</option>
+                                    <option value="2">Price: High to Low</option>
+                                    {% endif %}
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock content %}
