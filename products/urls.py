@@ -8,7 +8,6 @@ app_name = 'products'
 urlpatterns = [
     path('', views.HomeView.as_view(), name='home'),
     path('categories', TemplateView.as_view(template_name='products/categories.html'), name='category'),
-    path('filter-data/', views.products_filter, name='filter_data'),
     path('<slug:category_slug>/', views.product_list, name='products-list'),
     path('<slug:c_slug>/<slug:p_slug>', views.details_of_medicine, name='category'),
 ]

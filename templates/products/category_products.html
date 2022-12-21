@@ -46,11 +46,19 @@
                 <div class="col-lg-9 order-1 order-lg-2 mb-5 mb-lg-0">
                     <div class="row mb-3 align-items-center">
                         <div class="col-lg-6 mb-2 mb-lg-0">
-                            <p class="text-small text-muted mb-0">Showing 1–12 of 53 results</p>
+                            <p class="text-small text-muted mb-0">
+                                Showing Products {{ page_obj.start_index }} to {{ page_obj.end_index }}
+                            </p>
                         </div>
                         <!-- Button trigger modal -->
                         <div class="col-lg-6">
                             <div class="d-flex align-items-center justify-content-lg-end mb-0">
+                                {% if cat_id %}
+                                    <form>
+                                        <input type="hidden" value="1" name="clear_filter">
+                                        <button class="btn btn-primary mx-2" type="submit">Clear filter</button>
+                                    </form>
+                                {% endif %}
                                 <button type="button" class="btn btn-primary" data-toggle="modal"
                                         data-target="#exampleModalCenter">
                                     Filter
@@ -61,8 +69,8 @@
 
                     <div class="row">
 
-                        {% if products %}
-                        {% for product in products %}
+                        {% if page_obj %}
+                        {% for product in page_obj %}
 
                         <!-- PRODUCT-->
                         <div class="col-lg-4 col-sm-6">
@@ -121,21 +129,31 @@
                     <!-- PAGINATION-->
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center">
+                            {% if page_obj.has_previous %}
                             <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Previous">
-                                    <span aria-hidden="true">«</span>
-                                </a>
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}">&laquo;
+                                    Previous</a>
                             </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="">&laquo; Previous</a>
+                            </li>
+                            {% endif %}
 
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            {% for page_number in page_obj.paginator.page_range %}
+                            <li class="page-item {% if page_obj.number == page_number %} active {% endif %}"><a
+                                    class="page-link" href="?page={{page_number}}">{{page_number}}</a></li>
+                            {% endfor %}
 
+                            {% if page_obj.has_next %}
                             <li class="page-item">
-                                <a class="page-link" href="#" aria-label="Next">
-                                    <span aria-hidden="true">»</span>
-                                </a>
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}">Next &raquo;</a>
                             </li>
+                            {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="">Next &raquo;</a>
+                            </li>
+                            {% endif %}
                         </ul>
                     </nav>
                 </div>
@@ -183,28 +201,28 @@
                             </td>
                             <td>
                                 {% if selected_brands %}
-                                    {% for brand in brands %}
-                                        <div class="custom-control custom-checkbox mb-1">
-                                            <input class="custom-control-input filter-checkbox" id="id2-{{ brand.name }}"
-                                                   value="{{ brand.name }}" type="checkbox" name="brands"
-                                                   {% if brand.name in selected_brands %} checked {% endif %}>
-                                            <label class="custom-control-label text-small" for="id2-{{ brand.name }}">
-                                                {{ brand.name }}
-                                            </label>
-                                        </div>
+                                {% for brand in brands %}
+                                <div class="custom-control custom-checkbox mb-1">
+                                    <input class="custom-control-input filter-checkbox" id="id2-{{ brand.name }}"
+                                           value="{{ brand.name }}" type="checkbox" name="brands"
+                                           {% if brand.name in selected_brands %} checked {% endif %}>
+                                    <label class="custom-control-label text-small" for="id2-{{ brand.name }}">
+                                        {{ brand.name }}
+                                    </label>
+                                </div>
 
-                                    {% endfor %}
+                                {% endfor %}
                                 {% else %}
-                                    {% for brand in brands %}
+                                {% for brand in brands %}
 
-                                        <div class="custom-control custom-checkbox mb-1">
-                                            <input class="custom-control-input filter-checkbox" id="id-{{ brand.name }}"
-                                                   value="{{ brand.name }}" type="checkbox" name="brands">
-                                            <label class="custom-control-label text-small" for="id-{{ brand.name }}">
-                                                {{ brand.name }}
-                                            </label>
-                                        </div>
-                                    {% endfor %}
+                                <div class="custom-control custom-checkbox mb-1">
+                                    <input class="custom-control-input filter-checkbox" id="id-{{ brand.name }}"
+                                           value="{{ brand.name }}" type="checkbox" name="brands">
+                                    <label class="custom-control-label text-small" for="id-{{ brand.name }}">
+                                        {{ brand.name }}
+                                    </label>
+                                </div>
+                                {% endfor %}
                                 {% endif %}
                             </td>
                         </tr>
@@ -216,10 +234,12 @@
                                 <select class="selectpicker ml-auto" name="sort" data-style="bs-select-form-control">
                                     {% if sort_method %}
                                     <option value="0">Default sorting</option>
-                                    <option value="1"
-                                        {% if sort_method == '1' %} selected {% endif %}>Price: Low to High</option>
-                                    <option value="2"
-                                        {% if sort_method == '2' %} selected {% endif %}>Price: High to Low</option>
+                                    <option value="1" {% if sort_method == '1' %} selected {% endif %}>
+                                        Price: Low to High
+                                    </option>
+                                    <option value="2" {% if sort_method == '2' %} selected {% endif %}>
+                                        Price: High to Low
+                                    </option>
                                     {% else %}
                                     <option value="0">Default sorting</option>
                                     <option value="1">Price: Low to High</option>
