@@ -15,7 +15,7 @@
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
                             <li class="breadcrumb-item"><a href="{% url 'products:home' %}">Home</a></li>
-                            <li class="breadcrumb-item"><a href="#">Category</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'products:category' %}">Category</a></li>
                             <li class="breadcrumb-item active" aria-current="page">{{category.title}}</li>
                         </ol>
                     </nav>
@@ -79,7 +79,7 @@
 
                                     <div class="badge text-white badge-"></div>
 
-                                    <a class="d-block" href="#">
+                                    <a class="d-block" href="{{ product.get_url }}">
                                         {% if product.image %}
                                         <img class="img-fluid w-100" src="{{product.image.url}}"
                                              alt="{{product.title}}">
@@ -103,7 +103,8 @@
                                                 </a>
                                                 {% endcomment %}
 
-                                                <form action="#">
+                                                <form action="{% url 'products:add_to_cart' %}" method="post">
+                                                    {% csrf_token %}
                                                     <input type="hidden" name="prod_id" value="{{product.id}}"
                                                            id="product_id">
                                                     <button type="submit" class="btn btn-sm btn-dark">

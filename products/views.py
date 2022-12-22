@@ -3,7 +3,7 @@ import time
 from django.core.paginator import Paginator
 from django.db.models import Q
 from django.http import JsonResponse
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView, ListView
 from products.models import Category, Product, Brand
@@ -79,30 +79,30 @@ def product_list(request, category_slug):
         min_price = request.POST['min']
         max_price = request.POST['max']
 
-        session_filter = {
+        prod_filter = {
             'cat_id': category_id,
             'selected_brands': selected_brands,
             'sort_method': sort_method,
             'min_price': min_price,
             'max_price': max_price
         }
-        context.update(session_filter)
+        context.update(prod_filter)
 
         # filtering the products
-        products = product_filter(products, data=session_filter)
+        products = product_filter(products, data=prod_filter)
 
-        request.session['session_filter'] = session_filter
+        request.session['prod_filter'] = prod_filter
 
     # this block is used to filter the data when pagination is occurs...(when changing pages)
     if request.method == 'GET':
-        if 'session_filter' in request.session:
-            if request.session['session_filter']['cat_id'] == category_id:
-                session_filter = request.session['session_filter']
-                context.update(session_filter)
+        if 'prod_filter' in request.session:
+            if request.session['prod_filter']['cat_id'] == category_id:
+                prod_filter = request.session['prod_filter']
+                context.update(prod_filter)
                 # filtering the products
-                products = product_filter(products, data=session_filter)
+                products = product_filter(products, data=prod_filter)
             else:
-                request.session.flush()
+                del request.session['prod_filter']
         try:
             if request.GET['clear_filter'] == '1':
                 # clearing filter and reset to default products fetching
@@ -138,3 +138,63 @@ def details_of_medicine(request, c_slug, p_slug):
         'related_products': related_products
     }
     return render(request, 'products/detail.html', context)
+
+
+def cart(request):
+    context = dict()
+    cart_obj = list()
+
+    if 'cart' in request.session:
+        # request.session.flush()
+        session_cart = request.session['cart']
+        total_price = 0
+        for i in session_cart:
+            item = session_cart[i]
+            product = get_object_or_404(Product, id=i)
+            quantity = item['qty']
+            total = product.price * int(quantity)
+            temp = {
+                'product': product,
+                'qty': quantity,
+                'total': total
+            }
+            total_price += total
+            cart_obj.append(temp)
+        context = {
+            'cart_obj': cart_obj,
+            'total_price': total_price
+        }
+        
+    return render(request, 'products/cart.html', {'cart_products': context})
+
+
+def add_to_cart(request):
+    prod_id = request.POST['prod_id']
+    try:
+        qty = request.POST['quantity']
+        print('saanam kitty')
+    except:
+        qty = 1
+
+    print(prod_id)
+
+    item = dict()
+    item[prod_id] = {
+        'qty': qty
+    }
+
+    if 'cart' in request.session:
+        session_cart = request.session['cart']
+        if prod_id in request.session['cart']:
+            qty_in_session = int(session_cart[prod_id]['qty'])
+            session_cart[prod_id]['qty'] = qty_in_session + int(qty)
+            request.session['cart'] = session_cart
+        else:
+            session_cart.update(item)
+            request.session['cart'] = session_cart
+    else:
+        request.session['cart'] = item
+
+    request.session['cart_length'] = len(request.session['cart'])
+
+    return redirect('products:cart')

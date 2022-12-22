@@ -40,6 +40,17 @@
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'products:cart' %}">
+                            <i class="fas fa-cart-plus mr-1 text-gray"></i>
+                            Cart
+                            {% if request.session.cart_length %}
+                            <span class="text-primary">({{ request.session.cart_length }})</span>
+                            {% else %}
+                            <span class="text-primary">(0)</span>
+                            {% endif %}
+                        </a>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="#">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="#">Create Account</a></li>
                 </ul>

@@ -18,7 +18,7 @@
             {% for category in categories_obj %}
 
             <div class="col-md-4 mb-4 mb-md-5">
-                <a class="category-item" href="#">
+                <a class="category-item" href="{{ category.get_url }}">
                     <img class="img-fluid" src="{% static 'img/cat-img.jpg' %}" alt="{{ category.title }}">
                     <strong class="category-item-title">{{ category.title }}</strong>
                 </a>

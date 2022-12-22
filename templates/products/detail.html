@@ -63,13 +63,19 @@
 
                 <div class="row align-items-stretch mb-4">
 
+
                     <div class="col-sm-5 pr-sm-0">
                         <div class="border d-flex align-items-center justify-content-between py-1 px-3 bg-white border-white">
                             <span class="small text-uppercase text-gray mr-4 no-select">Quantity</span>
                             <div class="quantity">
-                                <button class="dec-btn p-0"><i class="fas fa-caret-left"></i></button>
-                                <input name="quantity" class="form-control border-0 shadow-0 p-0" type="text" value="1">
-                                <button class="inc-btn p-0"><i class="fas fa-caret-right"></i></button>
+                                <button class="dec-btn p-0" id="minus">
+                                    <i class="fas fa-caret-left"></i>
+                                </button>
+                                <input name="quantity" class="form-control border-0 shadow-0 p-0"
+                                       type="text" value="1" id="inputQty">
+                                <button class="inc-btn p-0" id="plus">
+                                    <i class="fas fa-caret-right"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -79,8 +85,10 @@
                         <a href="{% url 'products:add-to-cart' product.id %}"> Add to cart </a>
                         {% endcomment %}
 
-                        <form action="#">
+                        <form action="{% url 'products:add_to_cart' %}" method="post">
+                            {% csrf_token %}
                             <input type="hidden" name="prod_id" value="{{ product.id }}" id="product_id">
+                            <input type="hidden" name="quantity" value="0" id="quantity">
                             <button type="submit"
                                     class="btn btn-dark btn-lg btn-block h-100 d-flex align-items-center justify-content-center px-0">
                                 Add to Cart
@@ -101,7 +109,9 @@
                     </li>
                     <li class="px-3 py-2 mb-1 bg-white text-muted">
                         <strong class="text-uppercase text-dark">Category:</strong>
-                        <a class="reset-anchor ml-2 text-capitalize" href="#">{{ product.category }}</a>
+                        <a class="reset-anchor ml-2 text-capitalize" href="{{ product.category.get_url }}">
+                            {{ product.category }}
+                        </a>
                     </li>
                 </ul>
             </div>
@@ -128,7 +138,7 @@
             <div class="col-lg-3 col-sm-6">
                 <div class="product text-center skel-loader">
                     <div class="d-block mb-3 position-relative">
-                        <a class="d-block" href="#">
+                        <a class="d-block" href="{{ rp.get_url }}">
                             {% if rp.image %}
                             <img class="img-fluid w-100" src="{{ rp.image.url }}" alt="{{rp.title}}">
                             {% else %}
@@ -144,9 +154,13 @@
                                     </a>
                                 </li>
                                 <li class="list-inline-item m-0 p-0">
-                                    <a class="btn btn-sm btn-dark" href="#">
-                                        Add to cart
-                                    </a>
+                                    <form action="{% url 'products:add_to_cart' %}" method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="prod_id" value="{{ product.id }}">
+                                        <button type="submit" class="btn btn-sm btn-dark">
+                                            Add to Cart
+                                        </button>
+                                    </form>
                                 </li>
                             </ul>
                         </div>
@@ -163,4 +177,19 @@
         </div>
     </div>
 </section>
+
+<script src="{% static 'jquery.min.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        $("#quantity").val($("#inputQty").val());
+        $("#plus").on('click',function(){
+            var _qty = parseInt($("#inputQty").val())
+            $("#quantity").val((_qty)+1);
+        });
+        $("#minus").on('click',function(){
+            var _qty = parseInt($("#inputQty").val())
+            $("#quantity").val((_qty)-1);
+        });
+    });
+</script>
 {% endblock content %}
