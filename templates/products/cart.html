@@ -102,7 +102,8 @@
                                 <p class="mb-0 small">{{ cart_product.total|intcomma }} &#x20B9</p>
                             </td>
                             <td class="align-middle border-0">
-                                <a class="reset-anchor" href="">
+                                <a class="reset-anchor"
+                                   href="{% url 'products:remove_from_cart' cart_product.product.id %}">
                                     <i class="fas fa-trash-alt small text-muted"></i>
                                 </a>
                             </td>

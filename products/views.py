@@ -172,11 +172,8 @@ def add_to_cart(request):
     prod_id = request.POST['prod_id']
     try:
         qty = request.POST['quantity']
-        print('saanam kitty')
     except:
         qty = 1
-
-    print(prod_id)
 
     item = dict()
     item[prod_id] = {
@@ -197,4 +194,11 @@ def add_to_cart(request):
 
     request.session['cart_length'] = len(request.session['cart'])
 
+    return redirect('products:cart')
+
+
+def remove_from_cart(request, p_id):
+    session_cart = request.session['cart']
+    del session_cart[p_id]
+    request.session['cart'] = session_cart
     return redirect('products:cart')
