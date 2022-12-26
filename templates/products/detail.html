@@ -156,7 +156,7 @@
                                 <li class="list-inline-item m-0 p-0">
                                     <form action="{% url 'products:add_to_cart' %}" method="post">
                                         {% csrf_token %}
-                                        <input type="hidden" name="prod_id" value="{{ product.id }}">
+                                        <input type="hidden" name="prod_id" value="{{ rp.id }}">
                                         <button type="submit" class="btn btn-sm btn-dark">
                                             Add to Cart
                                         </button>

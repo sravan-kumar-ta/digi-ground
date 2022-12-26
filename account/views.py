@@ -1,12 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import login
-from django.shortcuts import redirect
+from django.shortcuts import redirect, get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView
 
 from account.CustomBackend import CustomAuth
 from account.forms import CustomUserCreationForm, LoginForm
 from account.models import CustomUser
+from products.models import Product, Cart
 
 
 class RegistrationView(CreateView):
@@ -27,8 +28,20 @@ class LoginView(FormView):
 
         if user:
             if not user.is_active:
-                messages.error(self.request, "You have not activated your account.")
-                return redirect('account:login')
+                # Here we have to build a phone number validation for activating user account.
+                # messages.error(self.request, "You have not activated your account.")
+                # return redirect('account:login')
+                user.is_active = True
+                user.save()
+                if 'cart' in self.request.session:
+                    session_cart = self.request.session['cart']
+                    for i in session_cart:
+                        item = session_cart[i]
+                        product = get_object_or_404(Product, id=i)
+                        quantity = item['qty']
+                        cart_item = Cart.objects.create(product=product, user=user, quantity=quantity)
+                        cart_item.save()
+
             login(request=self.request, user=user)
             messages.success(self.request, 'Successfully logged in')
             return redirect('products:home')
@@ -39,4 +52,3 @@ class LoginView(FormView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Credentials')
         return redirect('account:login')
-    

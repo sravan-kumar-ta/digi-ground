@@ -54,7 +54,7 @@ class CustomUser(AbstractBaseUser):
     objects = MyAccountManager()
 
     def __str__(self):
-        return self.email
+        return self.get_full_name()
 
     def has_perm(self, perm, obj=None):
         return self.is_admin

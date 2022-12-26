@@ -14,10 +14,16 @@ class BrandAdmin(admin.ModelAdmin):
 
 class ProductAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('title',)}
-    list_display = ('title', 'brand', 'category', 'price', 'stock')
+    list_display = ('id', 'title', 'brand', 'category', 'price', 'stock')
     list_editable = ('price', 'stock')
+
+
+class CartAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'quantity')
+    list_filter = ('product', 'user')
 
 
 admin.site.register(Brand, BrandAdmin)
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Product, ProductAdmin)
+admin.site.register(Cart, CartAdmin)

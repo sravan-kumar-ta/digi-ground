@@ -1,6 +1,8 @@
 from django.db import models
 from django.urls import reverse
 
+from account.models import CustomUser
+
 
 class Category(models.Model):
     title = models.CharField(max_length=50, unique=True)
@@ -42,3 +44,16 @@ class Product(models.Model):
 
     def get_url(self):
         return reverse('products:category', args=[self.category.slug, self.slug])
+
+
+class Cart(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    quantity = models.IntegerField()
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def item_total(self):
+        return self.product.price * self.quantity
+
+    def __str__(self):
+        return str(self.product.title) + '|' + str(self.user)

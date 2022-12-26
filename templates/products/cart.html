@@ -87,14 +87,26 @@
                                 <div class="border d-flex align-items-center justify-content-between px-3">
                                     <span class="small text-uppercase text-gray headings-font-family">Quantity</span>
                                     <div class="quantity">
-                                        <a href="" class="dec-btn p-0 ml-2">
-                                            <i class="fas fa-minus"></i>
-                                        </a>
+
+                                        <form action="{% url 'products:minus_from_cart' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="prod_id" value="{{ cart_product.product.id }}">
+                                            <button type="submit" class="p-0 text-primary">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                        </form>
+
                                         <input class="form-control form-control-sm border-0 shadow-0 p-0"
                                                type="text" value="{{ cart_product.qty }}"/>
-                                        <a href="" class="inc-btn p-0">
-                                            <i class="fas fa-plus"></i>
-                                        </a>
+
+                                        <form action="{% url 'products:add_to_cart' %}" method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="prod_id" value="{{ cart_product.product.id }}">
+                                            <button type="submit" class="p-0 text-primary">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </form>
+
                                     </div>
                                 </div>
                             </td>

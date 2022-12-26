@@ -129,7 +129,7 @@ def product_list(request, category_slug):
     return render(request, 'products/category_products.html', context)
 
 
-def details_of_medicine(request, c_slug, p_slug):
+def details_of_product(request, c_slug, p_slug):
     product = get_object_or_404(Product, slug=p_slug)
     related_products = Product.objects.exclude(id=product.id).filter(category__slug=c_slug)
 
@@ -143,9 +143,9 @@ def details_of_medicine(request, c_slug, p_slug):
 def cart(request):
     context = dict()
     cart_obj = list()
+    # request.session.flush()
 
     if 'cart' in request.session:
-        # request.session.flush()
         session_cart = request.session['cart']
         total_price = 0
         for i in session_cart:
@@ -193,6 +193,25 @@ def add_to_cart(request):
         request.session['cart'] = item
 
     request.session['cart_length'] = len(request.session['cart'])
+
+    return redirect('products:cart')
+
+
+def minus_from_cart(request):
+    try:
+        prod_id = request.POST['prod_id']
+        session_cart = request.session['cart']
+        qty_in_session = int(session_cart[prod_id]['qty'])
+        session_cart[prod_id]['qty'] = qty_in_session - 1
+        if session_cart[prod_id]['qty'] < 1:
+            del session_cart[prod_id]
+        request.session['cart'] = session_cart
+
+        request.session['cart_length'] = len(request.session['cart'])
+        if len(request.session['cart']) < 1:
+            del request.session['cart']
+    except:
+        pass
 
     return redirect('products:cart')
 
