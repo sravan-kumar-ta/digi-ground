@@ -41,8 +41,8 @@ class LoginView(FormView):
                         quantity = item['qty']
                         cart_item = Cart.objects.create(product=product, user=user, quantity=quantity)
                         cart_item.save()
-
             login(request=self.request, user=user)
+            self.request.session['cart_length'] = Cart.objects.filter(user=self.request.user).count()
             messages.success(self.request, 'Successfully logged in')
             return redirect('products:home')
         else:

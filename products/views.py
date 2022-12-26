@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.template.loader import render_to_string
 from django.views.generic import TemplateView, ListView
-from products.models import Category, Product, Brand
+from products.models import Category, Product, Brand, Cart
 
 
 class HomeView(TemplateView):
@@ -141,30 +141,50 @@ def details_of_product(request, c_slug, p_slug):
 
 
 def cart(request):
-    context = dict()
     cart_obj = list()
-    # request.session.flush()
+    total_price = 0
 
-    if 'cart' in request.session:
-        session_cart = request.session['cart']
-        total_price = 0
-        for i in session_cart:
-            item = session_cart[i]
-            product = get_object_or_404(Product, id=i)
-            quantity = item['qty']
-            total = product.price * int(quantity)
+    if request.user.is_authenticated:
+        products = Cart.objects.filter(user=request.user)
+        for i in products:
+            total = int(i.item_total())
+            product = get_object_or_404(Product, id=i.product.id)
             temp = {
                 'product': product,
-                'qty': quantity,
+                'qty': i.quantity,
                 'total': total
             }
             total_price += total
             cart_obj.append(temp)
+        request.session['cart_length'] = Cart.objects.filter(user=request.user).count()
+
+    else:
+        # request.session.flush()
+        if 'cart' in request.session:
+            session_cart = request.session['cart']
+            for i in session_cart:
+                item = session_cart[i]
+                product = get_object_or_404(Product, id=i)
+                quantity = item['qty']
+                total = product.price * int(quantity)
+                temp = {
+                    'product': product,
+                    'qty': quantity,
+                    'total': total
+                }
+                total_price += total
+                cart_obj.append(temp)
+
+            request.session['cart_length'] = len(request.session['cart'])
+
+    if len(cart_obj) < 1:
+        context = None
+    else:
         context = {
             'cart_obj': cart_obj,
             'total_price': total_price
         }
-        
+
     return render(request, 'products/cart.html', {'cart_products': context})
 
 
@@ -175,24 +195,38 @@ def add_to_cart(request):
     except:
         qty = 1
 
-    item = dict()
-    item[prod_id] = {
-        'qty': qty
-    }
-
-    if 'cart' in request.session:
-        session_cart = request.session['cart']
-        if prod_id in request.session['cart']:
-            qty_in_session = int(session_cart[prod_id]['qty'])
-            session_cart[prod_id]['qty'] = qty_in_session + int(qty)
-            request.session['cart'] = session_cart
+    if request.user.is_authenticated:
+        product = get_object_or_404(Product, id=prod_id)
+        if Cart.objects.filter(product=prod_id, user=request.user).exists():
+            item = Cart.objects.get(product=prod_id, user=request.user)
+            item.quantity += int(qty)
         else:
-            session_cart.update(item)
-            request.session['cart'] = session_cart
-    else:
-        request.session['cart'] = item
+            item = Cart.objects.create(
+                product=product,
+                user=request.user,
+                quantity=int(qty)
+            )
+        item.save()
 
-    request.session['cart_length'] = len(request.session['cart'])
+    else:
+        item = dict()
+        item[prod_id] = {
+            'qty': qty
+        }
+
+        if 'cart' in request.session:
+            session_cart = request.session['cart']
+            if prod_id in request.session['cart']:
+                qty_in_session = int(session_cart[prod_id]['qty'])
+                session_cart[prod_id]['qty'] = qty_in_session + int(qty)
+                request.session['cart'] = session_cart
+            else:
+                session_cart.update(item)
+                request.session['cart'] = session_cart
+        else:
+            request.session['cart'] = item
+
+        request.session['cart_length'] = len(request.session['cart'])
 
     return redirect('products:cart')
 
@@ -200,16 +234,20 @@ def add_to_cart(request):
 def minus_from_cart(request):
     try:
         prod_id = request.POST['prod_id']
-        session_cart = request.session['cart']
-        qty_in_session = int(session_cart[prod_id]['qty'])
-        session_cart[prod_id]['qty'] = qty_in_session - 1
-        if session_cart[prod_id]['qty'] < 1:
-            del session_cart[prod_id]
-        request.session['cart'] = session_cart
+        if request.user.is_authenticated:
+            item = Cart.objects.get(product=prod_id, user=request.user)
+            item.quantity -= 1
+            item.save()
+            if item.quantity < 1:
+                item.delete()
 
-        request.session['cart_length'] = len(request.session['cart'])
-        if len(request.session['cart']) < 1:
-            del request.session['cart']
+        else:
+            session_cart = request.session['cart']
+            qty_in_session = int(session_cart[prod_id]['qty'])
+            session_cart[prod_id]['qty'] = qty_in_session - 1
+            if session_cart[prod_id]['qty'] < 1:
+                del session_cart[prod_id]
+            request.session['cart'] = session_cart
     except:
         pass
 
@@ -217,7 +255,11 @@ def minus_from_cart(request):
 
 
 def remove_from_cart(request, p_id):
-    session_cart = request.session['cart']
-    del session_cart[p_id]
-    request.session['cart'] = session_cart
+    if request.user.is_authenticated:
+        item = Cart.objects.get(product=p_id, user=request.user)
+        item.delete()
+    else:
+        session_cart = request.session['cart']
+        del session_cart[p_id]
+        request.session['cart'] = session_cart
     return redirect('products:cart')
