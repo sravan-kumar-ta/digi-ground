@@ -53,7 +53,36 @@
                             {% endif %}
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account:logout' %}">Logout</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'account:wishlist' %}">
+                            <i class="fas fa-heart mr-1 text-gray"></i>
+                            <span class="text-primary">({{ wishlist_len }})</span>
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="pagesDropdownProfile" href="#"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-alt mr-1 text-gray"></i>
+                            My Account
+                        </a>
+
+                        <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdownProfile">
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'account:profile' %}">
+                                Profile
+                            </a>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'products:cart' %}">Cart</a>
+                            <a class="dropdown-item border-0 transition-link" href="">
+                                Orders
+                            </a>
+                            <a class="dropdown-item border-0 transition-link" href="">
+                                Change Password
+                            </a>
+                            <hr>
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'account:logout' %}">
+                                Log Out
+                            </a>
+                        </div>
+                    </li>
                 </ul>
                 {% else %}
                 <ul class="navbar-nav ml-auto">

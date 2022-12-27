@@ -57,3 +57,14 @@ class Cart(models.Model):
 
     def __str__(self):
         return str(self.product.title) + '|' + str(self.user)
+
+
+class Wishlist(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ("product", 'user')
+
+    def __str__(self):
+        return str(self.product.title) + '|' + str(self.user)

@@ -1,13 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth import login
-from django.shortcuts import redirect, get_object_or_404
+from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
-from django.views.generic import CreateView, FormView
+from django.views.generic import CreateView, FormView, ListView
 
 from account.CustomBackend import CustomAuth
 from account.forms import CustomUserCreationForm, LoginForm
 from account.models import CustomUser
-from products.models import Product, Cart
+from products.models import Product, Cart, Wishlist
 
 
 class RegistrationView(CreateView):
@@ -52,3 +52,30 @@ class LoginView(FormView):
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Credentials')
         return redirect('account:login')
+
+
+def profile(request):
+    return render(request, 'account/profile.html')
+
+
+class WishlistView(ListView):
+    model = Wishlist
+    context_object_name = 'wishlist'
+    template_name = 'account/wishlist.html'
+
+    def get_queryset(self):
+        return super().get_queryset().filter(user=self.request.user)
+
+
+def add_to_wishlist(request, p_id):
+    product = get_object_or_404(Product, id=p_id)
+    obj = Wishlist.objects.create(product=product, user=request.user)
+    obj.save()
+    return redirect('account:wishlist')
+
+
+def remove_from_wishlist(request, p_id):
+    product = get_object_or_404(Product, id=p_id)
+    obj = Wishlist.objects.get(product=product, user=request.user)
+    obj.delete()
+    return redirect('account:wishlist')

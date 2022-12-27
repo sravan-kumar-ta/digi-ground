@@ -64,6 +64,7 @@ TEMPLATES = [
 
                 'products.custom_context_processor.categories',
                 'products.custom_context_processor.get_filters',
+                'products.custom_context_processor.get_wishlist',
             ],
         },
     },
