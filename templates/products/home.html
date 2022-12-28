@@ -74,8 +74,7 @@
                             <ul class="mb-0 list-inline">
                                 {% if request.user.is_authenticated %}
                                 <li class="list-inline-item m-0 p-0">
-                                    <a class="btn btn-sm btn-outline-dark"
-                                       href="{% url 'account:add_wishlist' product.id %}">
+                                    <a class="btn btn-sm btn-outline-dark addWishlist" data-id="{{ product.id }}">
                                         <i class="far fa-heart"></i>
                                     </a>
                                 </li>
@@ -182,3 +181,7 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+{% include 'partials/add_wishlist.html' %}
+{% endblock script %}

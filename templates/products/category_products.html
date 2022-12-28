@@ -92,7 +92,8 @@
                                     <div class="product-overlay">
                                         <ul class="mb-0 list-inline">
                                             <li class="list-inline-item m-0 p-0">
-                                                <a class="btn btn-sm btn-outline-dark" href="#">
+                                                <a class="btn btn-sm btn-outline-dark addWishlist"
+                                                   data-id="{{ product.id }}">
                                                     <i class="far fa-heart"></i>
                                                 </a>
                                             </li>
@@ -262,3 +263,7 @@
 </div>
 
 {% endblock content %}
+
+{% block script %}
+{% include 'partials/add_wishlist.html' %}
+{% endblock script %}

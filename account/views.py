@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth import login
+from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, ListView
@@ -67,15 +68,25 @@ class WishlistView(ListView):
         return super().get_queryset().filter(user=self.request.user)
 
 
-def add_to_wishlist(request, p_id):
+def add_to_wishlist(request):
+    p_id = request.GET['prod_id']
     product = get_object_or_404(Product, id=p_id)
-    obj = Wishlist.objects.create(product=product, user=request.user)
-    obj.save()
-    return redirect('account:wishlist')
+    try:
+        obj = Wishlist.objects.create(product=product, user=request.user)
+        obj.save()
+        messages.success(request, 'Item added to your wishlist.')
+    except:
+        data = 0
+    else:
+        data = 1
+
+    # The data will be checked in ajax. If 1, redirect to wishlist page.
+    return JsonResponse({'data': data})
 
 
 def remove_from_wishlist(request, p_id):
     product = get_object_or_404(Product, id=p_id)
     obj = Wishlist.objects.get(product=product, user=request.user)
     obj.delete()
+    messages.error(request, 'Item remove from your wishlist.')
     return redirect('account:wishlist')

@@ -7,15 +7,7 @@
     {% include 'partials/_messages.html' %}
 
     <div class="jumbotron">
-        <h1>{{ request.user.first_name }} {{ request.user.last_name }}</h1>
-        <p><strong>Email:</strong> {{ request.user.email }}</p>
-        <p><strong>Username:</strong> {{ request.user.username }}</p>
-        <p>
-          <a class="btn btn-primary btn-large" href="">
-            Add Address »
-          </a>
-          <a class="btn btn-outline-primary btn-large" href="#">My Orders »</a>
-        </p>
+        <h2>Account Profile</h2>
     </div>
 
 
@@ -23,29 +15,23 @@
 
         <div class="col-lg-6">
             <div class="card mb-4" id="headings">
-                <div class="card-header">Addresses <span class="float-right"><a href="">Add Address</a></span>
+                <div class="card-header">
+                    User Details
+                    <span class="float-right"><a href="">Update</a></span>
                 </div>
                 <div class="card-body">
-                    {% if addresses %}
-                    {% for address in addresses %}
-                    <h4 class="mb-3">Address {{ forloop.counter }}</h4>
 
-                    <span class="float-right"><a href="{% url 'store:remove-address' address.id %}"><i
-                            class="fas fa-trash-alt small text-muted"></i></a></span>
+                    <h4 class="mb-3">{{ request.user.get_full_name }}</h4>
 
                     <p>
-                        <strong>Locality: </strong>{{ address.locality }} <br>
-                        <strong>City: </strong>{{ address.city }} <br>
-                        <strong>State: </strong>{{ address.state }} <br>
+                        <strong>Username: </strong>{{ request.user.username }} <br>
+                        <strong>First name: </strong>{{ request.user.first_name }} <br>
+                        <strong>Last name: </strong>{{ request.user.last_name }} <br>
+                        <strong>Email: </strong>{{ request.user.email }} <br>
+                        <strong>Phone: </strong>{{ request.user.phone_number }} <br>
                     </p>
 
                     <hr>
-                    {% endfor %}
-                    {% else %}
-                    <div class="text-danger">
-                        Address not Added.
-                    </div>
-                    {% endif %}
 
                 </div>
             </div>

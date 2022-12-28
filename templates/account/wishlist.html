@@ -4,6 +4,7 @@
 
 {% block content %}
 <div class="container">
+
     <!-- HERO SECTION-->
     <section class="py-5 bg-light">
         <div class="container">
@@ -20,20 +21,20 @@
                     </nav>
                 </div>
             </div>
+            {% include 'partials/_messages.html' %}
         </div>
     </section>
 
     {% if wishlist %}
     <section class="py-5">
-        <h2 class="h5 text-uppercase mb-4">Shopping cart</h2>
-
         <div class="row">
-            <div class="col-lg-8 mb-4 mb-lg-0">
+            <div class="col-lg-10 mb-lg-0">
                 <!-- CART TABLE-->
                 <div class="table-responsive mb-4">
                     <table class="table">
                         <thead class="bg-light">
                         <tr>
+                            <th class="border-0" scope="col">#</th>
                             <th class="border-0" scope="col">
                                 <strong class="text-small text-uppercase">Product</strong>
                             </th>
@@ -43,8 +44,12 @@
                             <th class="border-0" scope="col">
                                 <strong class="text-small text-uppercase">Price</strong>
                             </th>
-                            <th class="border-0" scope="col">Add to cart</th>
-                            <th class="border-0" scope="col">Remove</th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Add to cart</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Remove</strong>
+                            </th>
                         </tr>
                         </thead>
 
@@ -52,17 +57,19 @@
 
                         {% for item in wishlist %}
                         <tr>
+                            <td class="align-middle border-0">
+                                <strong class="mb-0">{{ forloop.counter }}</strong>
+                            </td>
                             <th class="pl-0 border-0" scope="row">
                                 <div class="media align-items-center">
 
-                                    <a class="reset-anchor d-block animsition-link"
-                                       href="{{ item.product.get_url }}">
+                                    <a class="reset-anchor d-block animsition-link" href="{{ item.product.get_url }}">
                                         <img src="{{ item.product.image.url }}" alt="{{cart_product.title}}" width="70"/>
                                     </a>
 
                                     <div class="media-body ml-3">
                                         <strong class="h6">
-                                            <a class="reset-anchor animsition-link" href="">
+                                            <a class="reset-anchor animsition-link" href="{{ item.product.get_url }}">
                                                 {{ item.product.title }}
                                             </a>
                                         </strong>
@@ -85,7 +92,7 @@
                                 </form>
                             </td>
                             <td class="align-middle border-0">
-                                <a class="reset-anchor" href="">
+                                <a class="reset-anchor" href="{% url 'account:del_wishlist' item.product.id %}">
                                     <i class="fas fa-trash-alt small text-muted"></i>
                                 </a>
                             </td>

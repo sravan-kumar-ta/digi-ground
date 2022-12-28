@@ -1,10 +1,7 @@
-import time
-
+from django.contrib import messages
 from django.core.paginator import Paginator
 from django.db.models import Q
-from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
-from django.template.loader import render_to_string
 from django.views.generic import TemplateView, ListView
 from products.models import Category, Product, Brand, Cart
 
@@ -15,7 +12,7 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = {
             'categories': Category.objects.all().order_by('?')[:3],  # fetching 3 random objects
-            'products': Product.objects.all().order_by('?')[:8]  # fetching 3 random objects
+            'products': Product.objects.all().order_by('?')[:8]
         }
         return context
 
@@ -228,6 +225,7 @@ def add_to_cart(request):
 
         request.session['cart_length'] = len(request.session['cart'])
 
+    messages.success(request, 'Item added to the cart.')
     return redirect('products:cart')
 
 
@@ -262,4 +260,5 @@ def remove_from_cart(request, p_id):
         session_cart = request.session['cart']
         del session_cart[p_id]
         request.session['cart'] = session_cart
+    messages.error(request, 'Item remove from your cart.')
     return redirect('products:cart')
