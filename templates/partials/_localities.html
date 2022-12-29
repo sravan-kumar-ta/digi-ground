@@ -1,0 +1,9 @@
+<div class="form-group">
+    <label for="id_locality">Nearest Location:</label>
+    <select class="form-control" id="id_locality" name="locality">
+        <option disabled selected>Select nearest location from this list.</option>
+        {% for locality in localities %}
+        <option value="{{ locality }}">{{ locality }}</option>
+        {% endfor %}
+    </select>
+</div>

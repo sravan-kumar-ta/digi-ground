@@ -13,4 +13,7 @@ urlpatterns = [
     path('wishlist/', views.WishlistView.as_view(), name="wishlist"),
     path('add-wishlist/', views.add_to_wishlist, name="add_wishlist"),
     path('remove-wishlist/<str:p_id>/', views.remove_from_wishlist, name="del_wishlist"),
+    path('add-address/', views.add_address, name="add_address"),
+    path('remove-address/<int:id>/', views.remove_address, name="remove_address"),
+    path('ajax/find-locality/', views.find_locality, name="pin_api"),
 ]

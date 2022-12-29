@@ -65,3 +65,15 @@ class CustomUser(AbstractBaseUser):
     def get_full_name(self):
         full_name = "%s %s" % (self.first_name, self.last_name)
         return full_name.strip()
+
+
+class Address(models.Model):
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
+    state = models.CharField(max_length=50)
+    district = models.CharField(max_length=50)
+    locality = models.CharField(max_length=50)
+    pin_code = models.PositiveIntegerField(max_length=6)
+    phone_number = models.CharField(max_length=20)
+
+    def __str__(self):
+        return str(self.user) + '|' + str(self.locality)

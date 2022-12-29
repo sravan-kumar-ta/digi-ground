@@ -1,13 +1,15 @@
+import requests
 from django.contrib import messages
 from django.contrib.auth import login
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, ListView
 
 from account.CustomBackend import CustomAuth
 from account.forms import CustomUserCreationForm, LoginForm
-from account.models import CustomUser
+from account.models import CustomUser, Address
 from products.models import Product, Cart, Wishlist
 
 
@@ -56,7 +58,9 @@ class LoginView(FormView):
 
 
 def profile(request):
-    return render(request, 'account/profile.html')
+    addresses = Address.objects.filter(user=request.user)
+
+    return render(request, 'account/profile.html', {'addresses': addresses})
 
 
 class WishlistView(ListView):
@@ -90,3 +94,55 @@ def remove_from_wishlist(request, p_id):
     obj.delete()
     messages.error(request, 'Item remove from your wishlist.')
     return redirect('account:wishlist')
+
+
+def add_address(request):
+    if request.method == 'POST':
+        try:
+            pin_code = request.POST['pin']
+            state = request.POST['state']
+            district = request.POST['district']
+            locality = request.POST['locality']
+            phone = request.POST['phone']
+            address = Address.objects.create(
+                pin_code=pin_code,
+                state=state,
+                district=district,
+                locality=locality,
+                phone_number=phone,
+                user=request.user
+            )
+            address.save()
+            messages.success(request, 'Successfully added your address.')
+            return redirect('account:profile')
+        except:
+            messages.error(request, 'Please enter your valid address..')
+
+    return render(request, 'account/add_address.html')
+
+
+def remove_address(request, id):
+    address = get_object_or_404(Address, user=request.user, id=id)
+    address.delete()
+    messages.success(request, "Address removed.")
+    return redirect('account:profile')
+
+
+def find_locality(request):
+    pin_code = request.GET['pin_code']
+
+    url = "https://api.postalpincode.in/pincode/" + str(pin_code)
+    response = requests.get(url)
+    data = response.json()
+
+    post_offices = data[0]['PostOffice']
+    locality = [i['Name'] for i in post_offices]
+
+    locality = render_to_string('partials/_localities.html', {'localities': locality})
+    data = {
+        'state': data[0]['PostOffice'][0]['State'],
+        'district': data[0]['PostOffice'][0]['District'],
+        'phone': request.user.phone_number,
+        'locality': locality
+    }
+    return JsonResponse({'data': data})

@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div class="container py-1">
+    <div class="col-md-8 offset-2">
+
+        <h1 class="mb-2">Add New Address</h1>
+
+
+        <div class="card mb-4" id="forms">
+            <div class="card-header">
+                <small>
+                    With this account, you can save time during checkout, access your shopping bag from any device and
+                    view your order history.
+                </small>
+            </div>
+            <div class="card-body">
+
+                {% include 'partials/_messages.html' %}
+
+                <form method="post" action="">
+                    {% csrf_token %}
+                    <fieldset>
+                        <div class="form-group">
+                            <label for="id_pin">PIN Code:</label>
+                            <input type="text" name="pin" class="form-control" placeholder="PIN code" maxlength="150"
+                                   required id="id_pin">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_state">State:</label>
+                            <input type="text" name="state" class="form-control" placeholder="State or Province"
+                                   maxlength="150" required id="id_state">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_city">District:</label>
+                            <input type="text" name="district" class="form-control" placeholder="District"
+                                   maxlength="150" required id="id_city">
+                        </div>
+
+                        <div class="form-group" id="location">
+                            <label for="id_locality">Nearest Location:</label>
+                            <input type="text" name="locality" class="form-control"
+                                   placeholder="Popular Place like Restaurant, Religious Site, etc." maxlength="150"
+                                   required id="id_locality">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_phone">Phone:</label>
+                            <input type="text" name="phone" class="form-control" placeholder="Your contact number"
+                                   max="10" id="id_phone">
+                        </div>
+
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock content %}
+
+{% block script %}
+<script>
+$(document).ready(function(){
+    $(".form-control").removeAttr('disabled');
+    $("#id_pin").on('blur',function(){
+        let _pinCode = $(this).val();
+        let _url = '{% url "account:pin_api" %}';
+        $.ajax({
+            url:_url,
+            data:{
+                pin_code: _pinCode
+            },
+            dataType: 'json',
+            beforeSend: function(){
+                $(".form-control").attr('disabled', 'disabled');
+            },
+            success: function(res){
+                $(".form-control").removeAttr('disabled');
+                $("#id_state").val(res.data.state);
+                $("#id_city").val(res.data.district);
+                $("#id_phone").val(res.data.phone);
+                $("#location").html(res.data.locality);
+
+                console.log(res.data);
+            },
+            error: function(){
+                alert("Enter a valid PIN Code.")
+                $(".form-control").removeAttr('disabled');
+            }
+        })
+    });
+});
+</script>
+{% endblock script %}
