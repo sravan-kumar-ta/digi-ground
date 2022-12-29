@@ -1,7 +1,7 @@
 import requests
 from django.contrib import messages
 from django.contrib.auth import login
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import PasswordChangeView, PasswordResetView
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.template.loader import render_to_string
@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, ListView
 
 from account.CustomBackend import CustomAuth
-from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm
+from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm, ResetPasswordForm
 from account.models import CustomUser, Address
 from products.models import Product, Cart, Wishlist
 
@@ -152,3 +152,8 @@ def find_locality(request):
 class ChangePasswordView(PasswordChangeView):
     template_name = 'account/change_password.html'
     form_class = ChangePasswordForm
+
+
+class ResetPasswordView(PasswordResetView):
+    template_name = 'account/password_reset.html'
+    form_class = ResetPasswordForm

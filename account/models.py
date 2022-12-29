@@ -72,7 +72,7 @@ class Address(models.Model):
     state = models.CharField(max_length=50)
     district = models.CharField(max_length=50)
     locality = models.CharField(max_length=50)
-    pin_code = models.PositiveIntegerField(max_length=6)
+    pin_code = models.PositiveIntegerField()
     phone_number = models.CharField(max_length=20)
 
     def __str__(self):
