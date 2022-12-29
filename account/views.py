@@ -1,6 +1,7 @@
 import requests
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.views import PasswordChangeView
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.template.loader import render_to_string
@@ -8,7 +9,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, FormView, ListView
 
 from account.CustomBackend import CustomAuth
-from account.forms import CustomUserCreationForm, LoginForm
+from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm
 from account.models import CustomUser, Address
 from products.models import Product, Cart, Wishlist
 
@@ -17,7 +18,7 @@ class RegistrationView(CreateView):
     model = CustomUser
     form_class = CustomUserCreationForm
     template_name = "account/register.html"
-    success_url = reverse_lazy("account:login")
+    success_url = reverse_lazy("login")
 
 
 class LoginView(FormView):
@@ -33,7 +34,7 @@ class LoginView(FormView):
             if not user.is_active:
                 # Here we have to build a phone number validation for activating user account.
                 # messages.error(self.request, "You have not activated your account.")
-                # return redirect('account:login')
+                # return redirect('login')
                 user.is_active = True
                 user.save()
                 if 'cart' in self.request.session:
@@ -50,11 +51,11 @@ class LoginView(FormView):
             return redirect('products:home')
         else:
             messages.error(self.request, "Invalid credentials..!")
-            return redirect('account:login')
+            return redirect('login')
 
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid Credentials')
-        return redirect('account:login')
+        return redirect('login')
 
 
 def profile(request):
@@ -93,7 +94,7 @@ def remove_from_wishlist(request, p_id):
     obj = Wishlist.objects.get(product=product, user=request.user)
     obj.delete()
     messages.error(request, 'Item remove from your wishlist.')
-    return redirect('account:wishlist')
+    return redirect('wishlist')
 
 
 def add_address(request):
@@ -114,7 +115,7 @@ def add_address(request):
             )
             address.save()
             messages.success(request, 'Successfully added your address.')
-            return redirect('account:profile')
+            return redirect('profile')
         except:
             messages.error(request, 'Please enter your valid address..')
 
@@ -125,7 +126,7 @@ def remove_address(request, id):
     address = get_object_or_404(Address, user=request.user, id=id)
     address.delete()
     messages.success(request, "Address removed.")
-    return redirect('account:profile')
+    return redirect('profile')
 
 
 def find_locality(request):
@@ -146,3 +147,8 @@ def find_locality(request):
         'locality': locality
     }
     return JsonResponse({'data': data})
+
+
+class ChangePasswordView(PasswordChangeView):
+    template_name = 'account/change_password.html'
+    form_class = ChangePasswordForm

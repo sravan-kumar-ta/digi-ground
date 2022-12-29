@@ -70,7 +70,7 @@ $(document).ready(function(){
     $(".form-control").removeAttr('disabled');
     $("#id_pin").on('blur',function(){
         let _pinCode = $(this).val();
-        let _url = '{% url "account:pin_api" %}';
+        let _url = '{% url "pin_api" %}';
         $.ajax({
             url:_url,
             data:{

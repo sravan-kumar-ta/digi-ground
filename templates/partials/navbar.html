@@ -49,7 +49,7 @@
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'account:wishlist' %}">
+                        <a class="nav-link" href="{% url 'wishlist' %}">
                             <i class="fas fa-heart mr-1 text-gray"></i>
                             <span class="text-primary">({{ wishlist_len }})</span>
                         </a>
@@ -62,18 +62,19 @@
                         </a>
 
                         <div class="dropdown-menu mt-3" aria-labelledby="pagesDropdownProfile">
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'account:profile' %}">
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'profile' %}">
                                 Profile
                             </a>
                             <a class="dropdown-item border-0 transition-link" href="{% url 'products:cart' %}">Cart</a>
                             <a class="dropdown-item border-0 transition-link" href="">
                                 Orders
                             </a>
-                            <a class="dropdown-item border-0 transition-link" href="">
+                            <a class="dropdown-item border-0 transition-link"
+                               href="{% url 'password_change' %}">
                                 Change Password
                             </a>
                             <hr>
-                            <a class="dropdown-item border-0 transition-link" href="{% url 'account:logout' %}">
+                            <a class="dropdown-item border-0 transition-link" href="{% url 'logout' %}">
                                 Log Out
                             </a>
                         </div>
@@ -92,8 +93,8 @@
                             {% endif %}
                         </a>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account:login' %}">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{% url 'account:register' %}">Create Account</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Create Account</a></li>
                 </ul>
                 {% endif %}
             </div>

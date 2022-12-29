@@ -4,8 +4,8 @@
         $(".addWishlist").click(function() {
             console.log("function called");
             var _prodId = $(this).attr('data-id');
-            var _url = '{% url "account:add_wishlist" %}';
-            var _redirectUrl = '{% url "account:wishlist" %}';
+            var _url = '{% url "add_wishlist" %}';
+            var _redirectUrl = '{% url "wishlist" %}';
 
             $.ajax({
                 url:_url,

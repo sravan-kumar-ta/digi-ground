@@ -24,7 +24,7 @@
                 <div class="card-header">
                     Addresses
                     <span class="float-right">
-                        <a href="{% url 'account:add_address' %}">Add Address</a>
+                        <a href="{% url 'add_address' %}">Add Address</a>
                     </span>
                 </div>
                 <div class="card-body">
@@ -33,7 +33,7 @@
                     <h4 class="mb-3">Address {{ forloop.counter }}</h4>
 
                     <span class="float-right">
-                        <a href="{% url 'account:remove_address' address.id %}">
+                        <a href="{% url 'remove_address' address.id %}">
                             <i class="fas fa-trash-alt small text-muted"></i>
                         </a>
                     </span>
