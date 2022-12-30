@@ -116,7 +116,7 @@
                                 </div>
                             </td>
                             <td class="align-middle border-0">
-                                <p class="mb-0 small">{{ cart_product.total|intcomma }} &#x20B9</p>
+                                <p class="mb-0 small">{{ cart_product.total|floatformat:2|intcomma }} &#x20B9</p>
                             </td>
                             <td class="align-middle border-0">
                                 <a class="reset-anchor"
@@ -147,11 +147,11 @@
                 <div class="card border-0 rounded-0 p-lg-4 bg-light">
                     <div class="card-body">
                         <h5 class="text-uppercase mb-4">Cart total</h5>
-                        <ul class="list-unstyled mb-0">
+                        <ul class="list-unstyled">
                             <li class="d-flex align-items-center justify-content-between">
                                 <strong class="text-uppercase small font-weight-bold">Subtotal</strong>
                                 <span class="text-muted small">
-                                    {{ cart_products.total_price|intcomma }}
+                                    {{ cart_products.total_price|floatformat:2|intcomma }}
                                 </span>
                             </li>
                             <li class="d-flex align-items-center justify-content-between">
@@ -160,14 +160,42 @@
                             <li class="border-bottom my-2"></li>
                             <li class="d-flex align-items-center justify-content-between mb-4">
                                 <strong class="text-uppercase small font-weight-bold">Total</strong>
-                                <strong>{{ cart_products.total_price|intcomma }} &#x20B9</strong>
+                                <strong>{{ cart_products.total_price|floatformat:2|intcomma }} &#x20B9</strong>
                             </li>
                         </ul>
 
+                        {% if request.user.is_authenticated %}
+                        {% if cart_products.addresses %}
+                        <hr>
+                        <strong class="text-uppercase text-sm">
+                            <u>Select&nbspShipping&nbspAddress</u>
+                        </strong>
 
-                        <button type="submit" class="btn btn-dark btn-lg btn-outline-dark">
+                        <form action="{% url 'checkout' %}" id="myform" class="mt-2" method="get">
+                            {% for address in cart_products.addresses %}
+                            <div class="mb-3 border px-2 shadow">
+                                <input type="radio" name="address" value="{{address.id}}" id="id_{{address.id}}">
+                                <strong>Address {{forloop.counter}}</strong><br>
+                                <label class="px-3" for="id_{{address.id}}" style="cursor:pointer">
+                                    {{address.phone_number}}
+                                    {{address.locality}},&nbsp{{address.district}}<br>
+                                    {{address.state}},&nbsp{{address.pin_code}}<br>
+                                </label>
+                            </div>
+                            {% endfor %}
+
+                            <button type="submit" class="btn btn-dark btn-lg btn-outline-dark">
+                                Proceed to checkout
+                            </button>
+                        </form>
+                        {% endif %}
+                        {% else %}
+
+                        <a type="submit" href="{% url 'login' %}"
+                           class="btn btn-dark btn-lg btn-outline-dark">
                             Proceed to checkout
-                        </button>
+                        </a>
+                        {% endif %}
 
                     </div>
                 </div>

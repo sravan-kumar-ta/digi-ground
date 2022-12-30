@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container">
+    <!-- HERO SECTION-->
+    <section class="bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="m-auto">
+                    <h1 class="h2 text-uppercase mb-0">Checkout</h1>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-5">
+
+        <div class="row">
+            <div class="col-lg-6 mb-4 mb-lg-0">
+                <h2 class="h5 text-uppercase mb-4">Cart Items</h2>
+                <!-- CART TABLE-->
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead class="bg-light">
+                        <tr>
+                            <th class="border-0" scope="col">#</th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Product</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Quantity</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Total</strong>
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        {% for cart in cart_objs %}
+                        <tr>
+                            <td class="align-middle border-0">
+                                <p class="mb-0">{{ forloop.counter }}</p>
+                            </td>
+
+                            <td class="align-middle border-0">
+                                <p class="mb-0">{{ cart.product.title }}</p>
+                            </td>
+
+                            <td class="align-middle border-0">
+                                <p class="mb-0">{{ cart.quantity }}</p>
+                            </td>
+
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">{{ cart.item_total }} &#x20B9</p>
+                            </td>
+
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- CART NAV-->
+                <div class="bg-light px-4 py-3">
+                    <div class="row align-items-center text-center">
+                        <div class="col-md-6 mb-3 mb-md-0 text-md-left">
+                            <p></p>
+                        </div>
+                        <div class="col-md-6 text-md-right">
+                            <p style="margin:0px;">
+                                Sub total :
+                                <span class="px-2">{{ sub_total|floatformat:2|intcomma }}</span>
+                            </p>
+                            <p style="margin:0px;">
+                                Tax :<span class="px-2">+ {{ tax|floatformat:2|intcomma }}</span>
+                            </p>
+                            <p style="margin:0px;">
+                                Shipping Charge :
+                                <span class="px-2">+ {{ shipping_charge|floatformat:2|intcomma }}</span>
+                            </p>
+                            <p style="margin:0px;">
+                                Discount :<span class="px-2">- {{ discount|floatformat:2|intcomma }}</span>
+                            </p>
+                            <hr style="background-color:black; margin:2px">
+                            <strong>
+                                Grand Total&nbsp&nbsp=
+                                <span class="px-2">{{ grand_total|floatformat:2|intcomma }} &#x20B9</span>
+                            </strong>
+                            <hr style="background-color:black; margin-bottom:3px;">
+                            <hr style="background-color:black; margin-top:3px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- ORDER DETAILS-->
+            <div class="col-lg-6">
+                <h2 class="h5 text-uppercase mb-4">Order details</h2>
+                <div class="card border-0 rounded-0 px-lg-4 bg-light">
+                    <div class="card-body">
+
+                        <h5 class="text-uppercase">Shipping to:</h5>
+                        {{ address.phone_number }}<br>
+                        {{ address.locality|title }}, {{ address.district|title }}<br>
+                        {{ address.state|title }}, {{ address.pin_code }}<br>
+                        <hr>
+                        <form class="text-center text-sm">
+                            {% csrf_token %}
+                            <input type="checkbox" class="form-check-input" id="digi" required style="cursor: pointer;">
+                            <label for="digi" style="cursor: pointer;">
+                                Accept the terms & Conditions of <a href="">Digital Ground</a>
+                            </label><br>
+                            <input type="checkbox" class="form-check-input" required
+                                   id="razo" style="cursor: pointer;">
+                            <label for="razo" class="mb-5">
+                                I agree to the <a href="https://razorpay.com/terms/">terms & conditions</a>
+                                and <a href="https://razorpay.com/privacy/">Privacy Policy</a> of RAZORPAY
+                            </label>
+                        </form>
+
+                        <div class="d-flex justify-content-around">
+                            <a href="{% url 'products:cart' %}" class="btn btn-outline-primary btn-large">
+                                Back to cart
+                            </a>
+                            <button type="submit" class="btn btn-primary btn-large">
+                                Pay Now
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+</div>
+{% endblock content %}

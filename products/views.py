@@ -3,6 +3,8 @@ from django.core.paginator import Paginator
 from django.db.models import Q
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import TemplateView, ListView
+
+from account.models import Address
 from products.models import Category, Product, Brand, Cart
 
 
@@ -140,6 +142,7 @@ def details_of_product(request, c_slug, p_slug):
 def cart(request):
     cart_obj = list()
     total_price = 0
+    context = None
 
     if request.user.is_authenticated:
         products = Cart.objects.filter(user=request.user)
@@ -154,6 +157,8 @@ def cart(request):
             total_price += total
             cart_obj.append(temp)
         request.session['cart_length'] = Cart.objects.filter(user=request.user).count()
+        addresses = Address.objects.filter(user=request.user)
+        context = {'addresses': addresses}
 
     else:
         # request.session.flush()
@@ -177,10 +182,8 @@ def cart(request):
     if len(cart_obj) < 1:
         context = None
     else:
-        context = {
-            'cart_obj': cart_obj,
-            'total_price': total_price
-        }
+        context['cart_obj'] = cart_obj
+        context['total_price'] = total_price
 
     return render(request, 'products/cart.html', {'cart_products': context})
 
