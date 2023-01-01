@@ -48,7 +48,18 @@ class LoginView(FormView):
             login(request=self.request, user=user)
             self.request.session['cart_length'] = Cart.objects.filter(user=self.request.user).count()
             messages.success(self.request, 'Successfully logged in')
-            return redirect('products:home')
+
+            # If url have next page
+            url = self.request.META.get('HTTP_REFERER')
+            try:
+                query = requests.utils.urlparse(url).query
+                params = dict(x.split('=') for x in query.split('&'))
+                if 'next' in params:
+                    nextPage = params['next']
+                    return redirect(nextPage)
+            except:
+                return redirect('products:home')
+
         else:
             messages.error(self.request, "Invalid credentials..!")
             return redirect('login')

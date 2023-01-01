@@ -110,7 +110,7 @@
                         {{ address.locality|title }}, {{ address.district|title }}<br>
                         {{ address.state|title }}, {{ address.pin_code }}<br>
                         <hr>
-                        <form class="text-center text-sm">
+                        <form action="{% url 'handle_request' %}" method="post" class="text-center text-sm">
                             {% csrf_token %}
                             <input type="checkbox" class="form-check-input" id="digi" required style="cursor: pointer;">
                             <label for="digi" style="cursor: pointer;">
@@ -122,16 +122,23 @@
                                 I agree to the <a href="https://razorpay.com/terms/">terms & conditions</a>
                                 and <a href="https://razorpay.com/privacy/">Privacy Policy</a> of RAZORPAY
                             </label>
-                        </form>
 
-                        <div class="d-flex justify-content-around">
+                            <script src="https://checkout.razorpay.com/v1/checkout.js"
+                                    data-key="{{ razorpay_id }}"
+                                    data-amount="{% widthratio grand_total 1 100 %}"
+                                    data-currency="{{ currency }}"
+                                    data-order_id="{{ order_id }}"
+                                    data-buttontext="Pay Now"
+                                    data-name="Digital Ground"
+                                    data-description="100% secured payment interface"
+                                    data-prefill.name="{{ request.user.first_name }}"
+                                    data-prefill.contact="{{ request.user.phone_number }}"
+                                    data-theme.color="#dcb14a">
+                            </script>
                             <a href="{% url 'products:cart' %}" class="btn btn-outline-primary btn-large">
                                 Back to cart
                             </a>
-                            <button type="submit" class="btn btn-primary btn-large">
-                                Pay Now
-                            </button>
-                        </div>
+                        </form>
 
                     </div>
                 </div>
@@ -143,3 +150,14 @@
 
 </div>
 {% endblock content %}
+
+{% block script %}
+
+<script src="{% static 'jquery.min.js' %}"></script>
+<script>
+    $(document).ready(function(){
+        $(".razorpay-payment-button").addClass("btn btn-primary btn-large");
+    });
+</script>
+
+{% endblock script %}
