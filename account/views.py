@@ -11,6 +11,7 @@ from django.views.generic import CreateView, FormView, ListView
 from account.CustomBackend import CustomAuth
 from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm, ResetPasswordForm
 from account.models import CustomUser, Address
+from orders.models import Order
 from products.models import Product, Cart, Wishlist
 
 
@@ -70,9 +71,14 @@ class LoginView(FormView):
 
 
 def profile(request):
-    addresses = Address.objects.filter(user=request.user)
+    addresses = Address.objects.filter(user=request.user, is_available=True)
+    orders = Order.objects.filter(user=request.user, payment_status=1)
 
-    return render(request, 'account/profile.html', {'addresses': addresses})
+    context = {
+        'addresses': addresses,
+        'orders': orders
+    }
+    return render(request, 'account/profile.html', context)
 
 
 class WishlistView(ListView):
@@ -135,7 +141,8 @@ def add_address(request):
 
 def remove_address(request, id):
     address = get_object_or_404(Address, user=request.user, id=id)
-    address.delete()
+    address.is_available = False
+    address.save()
     messages.success(request, "Address removed.")
     return redirect('profile')
 

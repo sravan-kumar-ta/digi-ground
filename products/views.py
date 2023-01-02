@@ -182,8 +182,17 @@ def cart(request):
     if len(cart_obj) < 1:
         context = None
     else:
+        tax = total_price * 3 / 100  # 3% tax
+        shipping_charge = 40
+        discount = total_price * 2 / 100  # 2% discount
+        grand_total = total_price + tax + shipping_charge - discount
+
         context['cart_obj'] = cart_obj
         context['total_price'] = total_price
+        context['tax'] = tax
+        context['shipping_charge'] = shipping_charge
+        context['discount'] = discount
+        context['grand_total'] = grand_total
 
     return render(request, 'products/cart.html', {'cart_products': context})
 

@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load humanize %}
 
 {% block content %}
 
@@ -66,8 +67,9 @@
                         <thead>
                         <tr>
                             <th>#</th>
-                            <th>Item</th>
-                            <th>Status</th>
+                            <th>Order Id</th>
+                            <th>Date</th>
+                            <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -75,9 +77,13 @@
                         {% for order in orders %}
                         <tr>
                             <td>{{ forloop.counter }}</td>
-                            <td>{{ order.product.title }}</td>
                             <td>
-                                {{ order.status }}
+                                <a href="">#{{ order.order_id }}</a>
+                            </td>
+                            <td>{{ order.datetime_of_payment|naturalday }}</td>
+                            <td>
+                                <a href="" class="btn btn-primary btn-sm signup-button">View</a>
+                                <a href="" class="btn btn-outline-primary btn-sm signup-button">Invoice</a>
                             </td>
                         </tr>
                         {% endfor %}

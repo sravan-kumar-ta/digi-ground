@@ -5,7 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 
 from account.models import Address
 from core_folder import settings
-from products.models import Cart
+from orders.models import Order, ProductInOrder
+from products.models import Cart, Product
 
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_ID, settings.RAZORPAY_KEY))
 
@@ -24,7 +25,19 @@ def checkout(request):
     discount = sub_total * 2 / 100  # 2% discount
     grand_total = sub_total + tax + shipping_charge - discount
 
-    razorpay_order = razorpay_client.order.create(dict(amount=int(grand_total * 100), currency="INR"))
+    notes = {'order-type': "basic order from the website", 'key': 'value'}
+    razorpay_order = razorpay_client.order.create(dict(amount=int(grand_total * 100), notes=notes, currency="INR"))
+
+    Order.objects.create(
+        user=request.user,
+        address=address,
+        sub_total=sub_total,
+        tax=tax,
+        shipping_charge=shipping_charge,
+        discount=discount,
+        grand_total=grand_total,
+        razorpay_order_id=razorpay_order['id']
+    ).save()
 
     context = {
         'address': address,
@@ -44,19 +57,37 @@ def checkout(request):
 @login_required(login_url='login')
 @csrf_exempt
 def handle_request(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         try:
-            response = request.POST
             params_dict = {
-                'razorpay_order_id': response['razorpay_order_id'],
-                'razorpay_payment_id': response['razorpay_payment_id'],
-                'razorpay_signature': response['razorpay_signature'],
+                'razorpay_order_id': request.POST['razorpay_order_id'],
+                'razorpay_payment_id': request.POST['razorpay_payment_id'],
+                'razorpay_signature': request.POST['razorpay_signature'],
             }
-            result = razorpay_client.utility.verify_payment_signature(params_dict)
-            return render(request, 'orders/payment_status.html', {'status': True})
+            razorpay_client.utility.verify_payment_signature(params_dict)
 
+            order = get_object_or_404(Order, razorpay_order_id=params_dict['razorpay_order_id'])
+            order.razorpay_payment_id = params_dict['razorpay_payment_id']
+            order.razorpay_signature = params_dict['razorpay_signature']
+            order.payment_status = 1  # 1 for success status
+            order.save()
+
+            cart_item = Cart.objects.filter(user=request.user)
+            for item in cart_item:
+                ProductInOrder.objects.create(
+                    order=order,
+                    product=item.product,
+                    quantity=item.quantity,
+                ).save()
+
+                product = get_object_or_404(Product, id=item.product.id)
+                product.stock -= item.quantity
+                product.save()
+
+            cart_item.delete()
+
+            return render(request, 'orders/payment_status.html', {'status': True})
         except:
             return render(request, 'orders/payment_status.html', {'status': False})
     else:
         return redirect('products:cart')
-

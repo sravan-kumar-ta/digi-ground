@@ -156,11 +156,26 @@
                             </li>
                             <li class="d-flex align-items-center justify-content-between">
                                 <strong class="text-uppercase small font-weight-bold">Shipping Charge</strong>
-                                <span class="text-muted small">+ 00.00</span></li>
+                                <span class="text-muted small">
+                                    + {{ cart_products.shipping_charge|floatformat:2|intcomma }}
+                                </span>
+                            </li>
+                            <li class="d-flex align-items-center justify-content-between">
+                                <strong class="text-uppercase small font-weight-bold">Tax</strong>
+                                <span class="text-muted small">
+                                    + {{ cart_products.tax|floatformat:2|intcomma }}
+                                </span>
+                            </li>
+                            <li class="d-flex align-items-center justify-content-between">
+                                <strong class="text-uppercase small font-weight-bold">Discount</strong>
+                                <span class="text-muted small">
+                                    - {{ cart_products.discount|floatformat:2|intcomma }}
+                                </span>
+                            </li>
                             <li class="border-bottom my-2"></li>
                             <li class="d-flex align-items-center justify-content-between mb-4">
                                 <strong class="text-uppercase small font-weight-bold">Total</strong>
-                                <strong>{{ cart_products.total_price|floatformat:2|intcomma }} &#x20B9</strong>
+                                <strong>{{ cart_products.grand_total|floatformat:2|intcomma }} &#x20B9</strong>
                             </li>
                         </ul>
 
