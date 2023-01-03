@@ -2,6 +2,7 @@ import razorpay
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, render, redirect
 from django.views.decorators.csrf import csrf_exempt
+from django.views.generic import ListView
 
 from account.models import Address
 from core_folder import settings
@@ -91,3 +92,16 @@ def handle_request(request):
             return render(request, 'orders/payment_status.html', {'status': False})
     else:
         return redirect('products:cart')
+
+
+def orders(request):
+    return render(request, 'orders/orders.html', {'orders': Order.objects.filter(user=request.user, payment_status=1)})
+
+
+def order_detail(request, o_id):
+    order = get_object_or_404(Order, id=o_id)
+    context = {
+        'order': order,
+        'products': ProductInOrder.objects.filter(order=order)
+    }
+    return render(request, 'orders/order_detail.html', context)

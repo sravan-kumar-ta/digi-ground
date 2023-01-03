@@ -78,12 +78,13 @@
                         <tr>
                             <td>{{ forloop.counter }}</td>
                             <td>
-                                <a href="">#{{ order.order_id }}</a>
+                                <a href="{% url 'order_detail' order.id %}">#{{ order.order_id }}</a>
                             </td>
                             <td>{{ order.datetime_of_payment|naturalday }}</td>
                             <td>
-                                <a href="" class="btn btn-primary btn-sm signup-button">View</a>
-                                <a href="" class="btn btn-outline-primary btn-sm signup-button">Invoice</a>
+                                <a href="{% url 'order_detail' order.id %}"
+                                   class="btn btn-primary btn-sm signup-button">View</a>
+                                <a href="" class="btn btn-primary btn-sm signup-button">Invoice</a>
                             </td>
                         </tr>
                         {% endfor %}

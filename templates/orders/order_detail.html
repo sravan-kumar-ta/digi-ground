@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container">
+
+    <!-- HERO SECTION-->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="h2 text-uppercase mb-0">My Order detail</h1>
+                </div>
+                <div class="col-lg-6 text-lg-right">
+                    <nav aria-label="breadcrumb">
+                        <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
+                            <li class="breadcrumb-item"><a href="{% url 'products:home' %}">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'orders' %}">Orders</a></li>
+                            <li class="breadcrumb-item active" aria-current="page">Order detail</li>
+                        </ol>
+                    </nav>
+                </div>
+            </div>
+            {% include 'partials/_messages.html' %}
+        </div>
+    </section>
+
+    {% if products %}
+    <section class="py-5">
+        <div class="row">
+            <div class="col-lg-10 mb-lg-0 m-auto">
+                <!-- Products TABLE-->
+                <div class="table-responsive mb-4">
+                    <table class="table">
+                        <thead class="bg-light">
+                        <tr>
+                            <th class="border-0" scope="col">#</th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Title</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Price</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Quantity</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Total</strong>
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        {% for product in products %}
+                        <tr>
+                            <td class="align-middle border-0">
+                                <strong class="mb-0">{{ forloop.counter }}</strong>
+                            </td>
+                            <td class="align-middle border-0">
+                                <div class="media align-items-center">
+
+                                    <a class="reset-anchor d-block animsition-link"
+                                       href="{{ product.product.get_url }}">
+                                        <img src="{{ product.product.image.url }}"
+                                             alt="{{ product.product.title }}" width="70"/>
+                                    </a>
+
+                                    <div class="media-body ml-3">
+                                        <strong class="h6">
+                                            <a class="reset-anchor animsition-link"
+                                               href="{{ product.product.get_url }}">
+                                                {{ product.product.title }}
+                                            </a>
+                                        </strong>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">{{ product.product.price }}</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">{{ product.quantity }}</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">{{ product.price }}</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Amount TABLE-->
+                <div class="table-responsive mb-4">
+                    <table class="table">
+                        <thead class="bg-light">
+                        <tr>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Date</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">sub total</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">tax</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">shipping charge</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">discount</strong>
+                            </th>
+                            <th class="border-0" scope="col">
+                                <strong class="text-small text-uppercase">Grant total</strong>
+                            </th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+
+                        <tr>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 text-capitalize">{{ order.datetime_of_payment|naturalday }}</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">&#x20B9 {{ order.sub_total }}</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">+ {{ order.tax }} &#x20B9</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">+ {{ order.shipping_charge }} &#x20B9</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <p class="mb-0 small">- {{ order.discount }} &#x20B9</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <strong class="mb-0">&#x20B9 {{ order.grand_total }}</strong>
+                            </td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-- CART NAV-->
+                <div class="bg-light px-4 py-3">
+                    <div class="row align-items-center text-center">
+                        <div class="m-auto">
+                            <a class="btn btn-primary btn-sm signup-button" href="">
+                                Get Invoice
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    {% else %}
+
+    <div class="text-center py-5">
+        <h3 class="mb-3">Your Order list is empty.</h3>
+        <a href="{% url 'products:category' %}"><i class="fas fa-long-arrow-alt-left mr-2"> </i>Continue shopping</a>
+    </div>
+
+    {% endif %}
+
+</div>
+{% endblock content %}

@@ -10,13 +10,13 @@
         <div class="container">
             <div class="row px-4 px-lg-5 py-lg-4 align-items-center">
                 <div class="col-lg-6">
-                    <h1 class="h2 text-uppercase mb-0">My Wishlist</h1>
+                    <h1 class="h2 text-uppercase mb-0">My Orders list</h1>
                 </div>
                 <div class="col-lg-6 text-lg-right">
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb justify-content-lg-end mb-0 px-0">
                             <li class="breadcrumb-item"><a href="{% url 'products:home' %}">Home</a></li>
-                            <li class="breadcrumb-item active" aria-current="page">Wishlist</li>
+                            <li class="breadcrumb-item active" aria-current="page">Order</li>
                         </ol>
                     </nav>
                 </div>
@@ -25,7 +25,7 @@
         </div>
     </section>
 
-    {% if wishlist %}
+    {% if orders %}
     <section class="py-5">
         <div class="row">
             <div class="col-lg-10 mb-lg-0 m-auto">
@@ -36,65 +36,52 @@
                         <tr>
                             <th class="border-0" scope="col">#</th>
                             <th class="border-0" scope="col">
-                                <strong class="text-small text-uppercase">Product</strong>
+                                <strong class="text-small text-uppercase">Order Id</strong>
                             </th>
                             <th class="border-0" scope="col">
-                                <strong class="text-small text-uppercase">Brand</strong>
+                                <strong class="text-small text-uppercase">Date</strong>
                             </th>
                             <th class="border-0" scope="col">
-                                <strong class="text-small text-uppercase">Price</strong>
+                                <strong class="text-small text-uppercase">Status</strong>
                             </th>
                             <th class="border-0" scope="col">
-                                <strong class="text-small text-uppercase">Add to cart</strong>
+                                <strong class="text-small text-uppercase">Total</strong>
                             </th>
                             <th class="border-0" scope="col">
-                                <strong class="text-small text-uppercase">Remove</strong>
+                                <strong class="text-small text-uppercase">Action</strong>
                             </th>
                         </tr>
                         </thead>
 
                         <tbody>
 
-                        {% for item in wishlist %}
+                        {% for order in orders %}
                         <tr>
                             <td class="align-middle border-0">
                                 <strong class="mb-0">{{ forloop.counter }}</strong>
                             </td>
-                            <th class="pl-0 border-0" scope="row">
-                                <div class="media align-items-center">
-
-                                    <a class="reset-anchor d-block animsition-link" href="{{ item.product.get_url }}">
-                                        <img src="{{ item.product.image.url }}" alt="{{cart_product.title}}" width="70"/>
-                                    </a>
-
-                                    <div class="media-body ml-3">
-                                        <strong class="h6">
-                                            <a class="reset-anchor animsition-link" href="{{ item.product.get_url }}">
-                                                {{ item.product.title }}
-                                            </a>
-                                        </strong>
-                                    </div>
-                                </div>
-                            </th>
                             <td class="align-middle border-0">
-                                <p class="mb-0 small">{{ item.product.brand }}</p>
+                                <a href="{% url 'order_detail' order.id %}">#{{ order.order_id }}</a>
                             </td>
                             <td class="align-middle border-0">
-                                <p class="mb-0 small">{{ item.product.price }} &#x20B9</p>
+                                <p class="mb-0 small">{{ order.datetime_of_payment|naturalday }}</p>
                             </td>
                             <td class="align-middle border-0">
-                                <form action="{% url 'products:add_to_cart' %}" method="post">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="prod_id" value="{{ item.product.id }}" id="product_id">
-                                    <button type="submit" class="btn">
-                                        <i class="fas fa-cart-arrow-down text-muted"></i>
-                                    </button>
-                                </form>
+                                {% if order.order_status == 1 %}
+                                <p class="mb-0 small text-success">Order Confirmed</p>
+                                {% elif order.order_status == 1 %}
+                                <p class="mb-0 small text-success">Shipped</p>
+                                {% elif order.order_status == 1 %}
+                                <p class="mb-0 small text-success">Delivered</p>
+                                {% endif %}
                             </td>
                             <td class="align-middle border-0">
-                                <a class="reset-anchor" href="{% url 'del_wishlist' item.product.id %}">
-                                    <i class="fas fa-trash-alt small text-muted"></i>
-                                </a>
+                                <p class="mb-0 small">&#x20B9 {{ order.grand_total|intcomma }}</p>
+                            </td>
+                            <td class="align-middle border-0">
+                                <a href="{% url 'order_detail' order.id %}"
+                                   class="btn btn-primary btn-sm signup-button">View</a>
+                                <a href="" class="btn btn-primary btn-sm signup-button">Invoice</a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -121,7 +108,7 @@
     {% else %}
 
     <div class="text-center py-5">
-        <h3 class="mb-3">Your wishlist is empty.</h3>
+        <h3 class="mb-3">Your Order list is empty.</h3>
         <a href="{% url 'products:category' %}"><i class="fas fa-long-arrow-alt-left mr-2"> </i>Continue shopping</a>
     </div>
 
