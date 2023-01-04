@@ -81,7 +81,8 @@
                             <td class="align-middle border-0">
                                 <a href="{% url 'order_detail' order.id %}"
                                    class="btn btn-primary btn-sm signup-button">View</a>
-                                <a href="" class="btn btn-primary btn-sm signup-button">Invoice</a>
+                                <a href="{% url 'generate_invoice' order.id %}" target="_blank"
+                                   class="btn btn-primary btn-sm signup-button">Invoice</a>
                             </td>
                         </tr>
                         {% endfor %}

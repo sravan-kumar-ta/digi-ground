@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Invoice Digital Ground</title>
+    <style>
+        body {
+            font-size: 13px;
+            margin: 30px 50px;
+        }
+
+        table {
+            width: 100%;
+        }
+
+        .heading {
+            background-color: #f4f4f4;
+            padding-top: 5px;
+        }
+
+        .styled-table thead tr {
+            background-color: #dcb14a;
+            color: #000000;
+            text-align: left;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .styled-table th,
+        .styled-table td {
+            padding: 5px 15px 0 15px;
+        }
+
+        .styled-table tbody tr {
+            border-bottom: 1px solid #dddddd;
+        }
+
+        .styled-table tbody tr:nth-of-type(even) {
+            background-color: #f3f3f3;
+        }
+
+        .styled-table tbody tr:last-of-type {
+            border-bottom: 1px solid #dcb14a;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<table>
+    <tr>
+        <td colspan="2"></td>
+        <td>
+            <p>
+                <strong style="font-size: 20px;">Digital Ground</strong><br>
+                Panampilly Nagar,<br>
+                Kochi, Kerala 682036 <br>
+                PH: 04843777777<br>
+            </p>
+        </td>
+    </tr>
+</table>
+<table>
+    <tr class="heading">
+        <td></td>
+        <td style="font-size: 18px;"><strong>Invoice</strong></td>
+        <td></td>
+    </tr>
+    <tr style="padding-top: 10px;">
+        <td>
+            PH:&nbsp;{{ order.address.phone_number }} <br>
+            {{ order.address.locality }} {{ order.address.pin_code }} <br>
+            {{ order.address.district }} <br>
+            {{ order.address.state }}
+        </td>
+        <td style="padding: 0;" colspan="2" align="right">
+            Order Number: <span style="color:#dcb14a;">#{{ order_id }}</span> <br>
+            Order Date: {{ date }} <br>
+            Transaction Id: {{ transaction_id }}
+        </td>
+    </tr>
+</table>
+
+
+<table class="styled-table">
+    <thead>
+    <tr>
+        <td>Product</td>
+        <td>Qty</td>
+        <td>Price</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for product in order.productinorder_set.all %}
+    <tr>
+        <td>{{ product.product.title }}</td>
+        <td>{{ product.quantity }}</td>
+        <td>{{ product.price }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<table>
+    <tbody>
+    <tr>
+        <td colspan="1"></td>
+        <td>
+            <table class="styled-table">
+                <tr style="font-size: 15px">
+                    <td>
+                        Sub&nbsp;total
+                        Shipping&nbsp;charge
+                        Tax
+                        Discount
+                        <strong>Grand&nbsp;total</strong>
+                    </td>
+                    <td>
+                        {{ order.sub_total }}
+                        +&nbsp;{{ order.shipping_charge }}
+                        +&nbsp;{{ order.tax }}
+                        -&nbsp;{{ order.discount }}
+                        <strong>{{ order.grand_total }}</strong>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+<hr>
+<strong>Estimated Time:</strong> <br>
+Minimum 2 working days <br>
+Maximum 5 to 10 working days <br>
+Product dispatch is only after complete product manufacturing. <br><br>
+*All values are in INR
+</body>
+
+</html>

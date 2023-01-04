@@ -23,7 +23,8 @@
                     Congratulations! You have successfully done the payment.<br>
                     Your order will reach to you in 5 days.
                 </h3>
-                <a class="btn btn-primary btn-sm signup-button my-3" href="">Print Invoice</a>
+                <a class="btn btn-primary btn-sm signup-button my-3" target="_blank"
+                   href="{% url 'generate_invoice' order.id %}">Print Invoice</a>
                 <br>
                 <a class="btn btn-link p-0 text-dark btn-sm" href="{% url 'products:category' %}">
                     <i class="fas fa-long-arrow-alt-left mr-2"></i>

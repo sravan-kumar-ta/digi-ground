@@ -1,8 +1,12 @@
+from io import BytesIO
+
 import razorpay
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
+from django.template.loader import get_template
 from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import ListView
+from xhtml2pdf import pisa
 
 from account.models import Address
 from core_folder import settings
@@ -105,3 +109,30 @@ def order_detail(request, o_id):
         'products': ProductInOrder.objects.filter(order=order)
     }
     return render(request, 'orders/order_detail.html', context)
+
+
+def render_to_pdf(template_src, context_dict):
+    template = get_template(template_src)
+    html = template.render(context_dict)
+    result = BytesIO()
+    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
+    if not pdf.err:
+        return HttpResponse(result.getvalue(), content_type='application/pdf')
+    return None
+
+
+def generate_invoice(request, o_id):
+    try:
+        order = Order.objects.get(id=o_id, user=request.user, payment_status=1)
+    except:
+        return HttpResponse("505 Not Found")
+
+    data = {
+        'order_id': order.order_id,
+        'order': order,
+        'date': order.datetime_of_payment.strftime("%b %d %Y"),
+        'transaction_id': order.razorpay_payment_id,
+    }
+
+    pdf = render_to_pdf('orders/invoice.html', data)
+    return HttpResponse(pdf, content_type='application/pdf')
