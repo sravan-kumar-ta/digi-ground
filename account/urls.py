@@ -8,6 +8,8 @@ urlpatterns = [
     path('register/', views.RegistrationView.as_view(), name="register"),
     path('login/', views.LoginView.as_view(), name="login"),
     path('logout/', auth_views.LogoutView.as_view(next_page='products:home'), name="logout"),
+    path('verify-with-otp/', views.verify_otp, name='verify'),
+
     path('profile/', views.profile, name="profile"),
     path('wishlist/', views.WishlistView.as_view(), name="wishlist"),
     path('add-wishlist/', views.add_to_wishlist, name="add_wishlist"),

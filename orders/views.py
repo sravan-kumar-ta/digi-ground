@@ -16,6 +16,7 @@ from products.models import Cart, Product
 razorpay_client = razorpay.Client(auth=(settings.RAZORPAY_ID, settings.RAZORPAY_KEY))
 
 
+@login_required(login_url='login')
 def checkout(request):
     address_id = request.GET['address']
     address = get_object_or_404(Address, id=address_id)
@@ -98,10 +99,12 @@ def handle_request(request):
         return redirect('products:cart')
 
 
+@login_required(login_url='login')
 def orders(request):
     return render(request, 'orders/orders.html', {'orders': Order.objects.filter(user=request.user, payment_status=1)})
 
 
+@login_required(login_url='login')
 def order_detail(request, o_id):
     order = get_object_or_404(Order, id=o_id)
     context = {
@@ -111,6 +114,7 @@ def order_detail(request, o_id):
     return render(request, 'orders/order_detail.html', context)
 
 
+@login_required(login_url='login')
 def render_to_pdf(template_src, context_dict):
     template = get_template(template_src)
     html = template.render(context_dict)
@@ -121,6 +125,7 @@ def render_to_pdf(template_src, context_dict):
     return None
 
 
+@login_required(login_url='login')
 def generate_invoice(request, o_id):
     try:
         order = Order.objects.get(id=o_id, user=request.user, payment_status=1)

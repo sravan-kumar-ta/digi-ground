@@ -63,3 +63,10 @@ class NewPasswordForm(SetPasswordForm):
 
         for field in self.fields:
             self.fields[field].widget.attrs['class'] = 'form-control'
+
+
+class VerifyForm(forms.Form):
+    code = forms.CharField(widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Enter OTP received in your phone'
+    }), label=_('Your OTP'))

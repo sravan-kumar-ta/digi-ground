@@ -1,16 +1,19 @@
 import requests
 from django.contrib import messages
 from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import PasswordChangeView, PasswordResetView
 from django.http import JsonResponse
 from django.shortcuts import redirect, get_object_or_404, render
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
+from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, FormView, ListView
 
 from account.CustomBackend import CustomAuth
-from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm, ResetPasswordForm
+from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm, ResetPasswordForm, VerifyForm
 from account.models import CustomUser, Address
+from account.twilio import _send_otp, _verify_otp
 from orders.models import Order
 from products.models import Product, Cart, Wishlist
 
@@ -33,19 +36,21 @@ class LoginView(FormView):
 
         if user:
             if not user.is_active:
-                # Here we have to build a phone number validation for activating user account.
-                # messages.error(self.request, "You have not activated your account.")
-                # return redirect('login')
-                user.is_active = True
-                user.save()
-                if 'cart' in self.request.session:
-                    session_cart = self.request.session['cart']
-                    for i in session_cart:
-                        item = session_cart[i]
-                        product = get_object_or_404(Product, id=i)
-                        quantity = item['qty']
-                        cart_item = Cart.objects.create(product=product, user=user, quantity=quantity)
-                        cart_item.save()
+                self.request.session['phone_number'] = user.phone_number
+                messages.error(self.request, "You have not activated your account.")
+                messages.success(self.request, "OTP sent your phone number")
+                _send_otp(user.phone_number)
+                return redirect('verify')
+
+            if 'cart' in self.request.session:
+                session_cart = self.request.session['cart']
+                for i in session_cart:
+                    item = session_cart[i]
+                    product = get_object_or_404(Product, id=i)
+                    quantity = item['qty']
+                    cart_item = Cart.objects.create(product=product, user=user, quantity=quantity)
+                    cart_item.save()
+
             login(request=self.request, user=user)
             self.request.session['cart_length'] = Cart.objects.filter(user=self.request.user).count()
             messages.success(self.request, 'Successfully logged in')
@@ -70,6 +75,28 @@ class LoginView(FormView):
         return redirect('login')
 
 
+def verify_otp(request):
+    if request.method == 'POST':
+        form = VerifyForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data.get('code')
+            phone_number = request.session['phone_number']
+
+            if _verify_otp(phone_number, code):
+                user = CustomUser.objects.get(phone_number=phone_number)
+                user.is_active = True
+                user.save()
+                messages.success(request, 'Your account has been verified successfully.')
+                return redirect('login')
+            else:
+                messages.error(request, 'Enter the correct OTP')
+                return redirect('verify')
+    else:
+        form = VerifyForm()
+        return render(request, 'account/otp_verification.html', {'form': form})
+
+
+@login_required(login_url='login')
 def profile(request):
     addresses = Address.objects.filter(user=request.user, is_available=True)
     orders = Order.objects.filter(user=request.user, payment_status=1)
@@ -81,6 +108,7 @@ def profile(request):
     return render(request, 'account/profile.html', context)
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 class WishlistView(ListView):
     model = Wishlist
     context_object_name = 'wishlist'
@@ -90,6 +118,7 @@ class WishlistView(ListView):
         return super().get_queryset().filter(user=self.request.user)
 
 
+@method_decorator(login_required(login_url='login'), name='dispatch')
 def add_to_wishlist(request):
     p_id = request.GET['prod_id']
     product = get_object_or_404(Product, id=p_id)
@@ -106,6 +135,7 @@ def add_to_wishlist(request):
     return JsonResponse({'data': data})
 
 
+@login_required(login_url='login')
 def remove_from_wishlist(request, p_id):
     product = get_object_or_404(Product, id=p_id)
     obj = Wishlist.objects.get(product=product, user=request.user)
@@ -114,6 +144,7 @@ def remove_from_wishlist(request, p_id):
     return redirect('wishlist')
 
 
+@login_required(login_url='login')
 def add_address(request):
     if request.method == 'POST':
         try:
@@ -139,6 +170,7 @@ def add_address(request):
     return render(request, 'account/add_address.html')
 
 
+@login_required(login_url='login')
 def remove_address(request, id):
     address = get_object_or_404(Address, user=request.user, id=id)
     address.is_available = False
@@ -147,6 +179,7 @@ def remove_address(request, id):
     return redirect('profile')
 
 
+@login_required(login_url='login')
 def find_locality(request):
     pin_code = request.GET['pin_code']
 
