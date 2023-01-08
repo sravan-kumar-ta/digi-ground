@@ -32,4 +32,6 @@ urlpatterns = [
          name='password_reset_confirm'),
     path('reset_password_complete/', auth_views.PasswordResetCompleteView.as_view(
         template_name='account/password_reset_complete.html'), name='password_reset_complete'),
+
+    path('admin-dashboard/', views.dashboard, name='custom_dashboard')
 ]

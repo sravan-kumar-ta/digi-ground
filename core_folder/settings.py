@@ -23,6 +23,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -149,3 +150,10 @@ RAZORPAY_KEY = config('RAZORPAY_KEY_SECRET')
 TWILIO_AUTH_TOKEN = config('TWILIO_AUTH_TOKEN')
 TWILIO_ACCOUNT_SID = config('TWILIO_ACCOUNT_SID')
 TWILIO_VERIFY_SERVICE_SID = config('TWILIO_VERIFY_SERVICE_SID')
+
+# Custom admin panel settings
+JAZZMIN_SETTINGS = {
+    "site_title": "Digi Ground Admin",
+    "default_icon_children": "fas fa-table",
+    "site_icon": "img/favicon.png",
+}

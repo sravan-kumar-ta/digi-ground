@@ -1,0 +1,439 @@
+{% extends 'admin/base.html' %}
+{% load i18n static jazzmin admin_urls %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+{% get_jazzmin_settings request as jazzmin_settings %}
+{% get_jazzmin_ui_tweaks as jazzmin_ui %}
+
+
+{% block bodyclass %}{{ block.super }} dashboard{% endblock %}
+
+{% block content_title %} {% trans 'Storage Analysis' %} {% endblock %}
+
+{% block sidebar %}
+{% if jazzmin_settings.show_sidebar %}
+{% get_side_menu as side_menu_list %}
+
+<aside class="main-sidebar elevation-4 {{ jazzmin_ui.sidebar_classes }}" id="jazzy-sidebar">
+    <a href="{% url 'admin:index' %}" class="brand-link {{ jazzmin_ui.brand_classes }}" id="jazzy-logo">
+        <img src="{% static jazzmin_settings.site_logo %}" alt="{{ jazzmin_settings.site_header }} Logo"
+             class="{{ jazzmin_settings.site_logo_classes }} brand-image elevation-3" style="opacity: .8">
+        <span class="brand-text font-weight-light">{{ jazzmin_settings.site_brand }}</span>
+    </a>
+
+    <div class="sidebar">
+        <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+            <div class="image">
+                {% if jazzmin_settings|has_jazzmin_setting:"user_avatar" %}
+                <img src="{% get_user_avatar request.user %}" width="160px" class="img-circle elevation-2"
+                     alt="User Image">
+                {% else %}
+                <i class="fas fa-inverse user-profile fa-user-circle"></i>
+                {% endif %}
+            </div>
+            <div class="info">
+                {% if perms|can_view_self %}
+                <a href="{% jazzy_admin_url request.user request.current_app|default:'admin' %}"
+                   class="d-block">{{ request.user }}
+                </a>
+                {% else %}
+                <span class="d-block" style="color: white;">{{ request.user }}</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <nav class="mt-2">
+            <ul class="nav nav-pills nav-sidebar flex-column {{ jazzmin_ui.sidebar_list_classes }}"
+                data-widget="treeview" role="menu" data-collapsible="false">
+
+                <li class="nav-item">
+                    <a href="{% url 'admin:index' %}" class="nav-link">
+                        <i class="nav-icon fas fa-th-large"></i>
+                        <p>{% trans 'Dashboard' %}</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{% url 'custom_dashboard' %}" class="nav-link">
+                        <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <p>{% trans 'Storage Analysis' %}</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Account</li>
+
+                <li class="nav-item">
+                    <a href="/admin/account/address/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Addresss</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/account/customuser/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Custom users</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Authentication and Authorization</li>
+
+                <li class="nav-item">
+                    <a href="/admin/auth/group/" class="nav-link">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Groups</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Orders</li>
+
+                <li class="nav-item">
+                    <a href="/admin/orders/order/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Orders</p>
+                    </a>
+                </li>
+
+                <li class="nav-header">Products</li>
+
+                <li class="nav-item">
+                    <a href="/admin/products/brand/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Brands</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/products/cart/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Carts</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/products/category/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Categorys</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/products/product/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Products</p>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/products/wishlist/" class="nav-link">
+                        <i class="nav-icon fas fa-table"></i>
+                        <p>Wishlists</p>
+                    </a>
+                </li>
+
+            </ul>
+        </nav>
+    </div>
+</aside>
+{% endif %}
+{% endblock %}
+
+{% block breadcrumbs %}
+<ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="{% url 'admin:index' %}">{% trans 'Home' %}</a></li>
+    <li class="breadcrumb-item">{% trans 'Dashboard' %}</li>
+</ol>
+{% endblock %}
+
+
+{% block content %}
+{% get_side_menu using="app_list" as dashboard_list %}
+{% if dashboard_list %}
+{% widthratio dashboard_list|length 2 1 as middle %}
+{% endif %}
+
+<div class="col-lg-9 col-12">
+
+    <!-- Database summary -->
+    <div class="row">
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-warning">
+                <div class="inner">
+                    <h3>{{ users }}</h3>
+
+                    <p>User Registrations</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <a href="/admin/account/customuser/" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-info">
+                <div class="inner">
+                    <h3>{{ orders }}</h3>
+
+                    <p>Orders</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-cart-plus"></i>
+                </div>
+                <a href="/admin/orders/order/" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-success">
+                <div class="inner">
+                    <h3>{{ categories_count }}</h3>
+                    <p>Products Categories</p>
+                </div>
+                <div class="icon">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                </div>
+                <a href="/admin/products/category/" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+        <div class="col-lg-3 col-6">
+            <!-- small card -->
+            <div class="small-box bg-danger">
+                <div class="inner">
+                    <h3>{{ brands }}</h3>
+
+                    <p>Category Brands</p>
+                </div>
+                <div class="icon">
+                    <i class="fas fa-chart-pie"></i>
+                </div>
+                <a href="/admin/products/brand/" class="small-box-footer">
+                    More info <i class="fas fa-arrow-circle-right"></i>
+                </a>
+            </div>
+        </div>
+        <!-- ./col -->
+    </div>
+    <!-- /.row -->
+
+
+    <!-- Available Stocks of Products -->
+    <h5 class="mb-2 mt-4">Available Stocks of Products</h5>
+    <div class="row">
+        <!-- fix for small devices only -->
+        <div class="clearfix hidden-md-up"></div>
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-mobile"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Phones</span>
+                    <span class="info-box-number">{{ products.Phones }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-battery-three-quarters"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Powerbanks</span>
+                    <span class="info-box-number">{{ products.Powerbanks }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-headphones"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Headphones</span>
+                    <span class="info-box-number">{{ products.Headphones }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fas fa-laptop"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Laptops</span>
+                    <span class="info-box-number">{{ products.Laptops }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fa fa-tablet"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Tablets</span>
+                    <span class="info-box-number">{{ products.Tablets }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+        <div class="col-12 col-sm-6 col-md-3">
+            <div class="info-box mb-3">
+                <span class="info-box-icon bg-success elevation-1"><i class="fa fa-camera"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Cameras</span>
+                    <span class="info-box-number">{{ products.Cameras }}</span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+            <!-- /.info-box -->
+        </div>
+        <!-- /.col -->
+
+    </div>
+    <!-- /.row -->
+
+
+    <div class="row">
+        <div class="col-md-6 col-sm-12">
+            {% for app in dashboard_list %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="m-0">{{ app.name }}</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-sm">
+                        <tbody>
+                        {% for model in app.models %}
+                        <tr>
+                            <td>
+                                {% if model.url %}<a href="{{ model.url }}">{{ model.name }}</a>{% else %}{{ model.name
+                                }}{% endif %}
+                            </td>
+                            <td>
+                                <div class="btn-group float-right">
+                                    {% if model.add_url %}
+                                    <a href="{{ model.add_url }}"
+                                       class="btn btn-xs {{ jazzmin_ui.button_classes.success }} addlink">{% trans 'Add'
+                                        %}</a>
+                                    {% endif %}
+                                    {% if model.url %}
+                                    {% if model.view_only %}
+                                    <a href="{{ model.url }}"
+                                       class="btn btn-xs {{ jazzmin_ui.button_classes.info }} viewlink">{% trans 'View'
+                                        %}</a>
+                                    {% else %}
+                                    <a href="{{ model.url }}"
+                                       class="btn btn-xs {{ jazzmin_ui.button_classes.info }} changelink">
+                                        {% if model.custom %}
+                                        {% trans 'Go' %}
+                                        {% else %}
+                                        {% trans 'Change' %}
+                                        {% endif %}
+                                    </a>
+                                    {% endif %}
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            {% if forloop.counter == middle|add:"0" %}
+        </div>
+        <div class="col-md-6 col-sm-12">
+            {% endif %}
+
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+<div class="col-lg-3 col-12">
+    <div id="content-related">
+        <div class="module" id="recent-actions-module">
+            <h4 class="mb-3">{% trans 'Recent actions' %}</h4>
+            {% load log %}
+            {% get_admin_log 6 as admin_log for_user user %}
+            {% if not admin_log %}
+            <p>{% trans 'None available' %}</p>
+            {% else %}
+            <div class="timeline">
+                {% for entry in admin_log %}
+                <div>
+                    {% if entry.is_change %}
+                    <i class="fas fa-edit bg-gray text-xs"></i>
+                    {% elif entry.is_deletion %}
+                    <i class="fas fa-trash bg-danger text-xs"></i>
+                    {% elif entry.is_addition %}
+                    <i class="fas fa-plus-circle bg-success text-xs"></i>
+                    {% endif %}
+
+                    <div class="timeline-item">
+                        <span class="time"><i class="fas fa-clock"></i> {% blocktrans with timesince=entry.action_time|timesince %}{{ timesince }} ago{% endblocktrans %}</span>
+                        <h3 class="timeline-header no-border">
+                            {% if entry.is_deletion or not entry.get_admin_url %}
+                            {{ entry.object_repr }}
+                            {% else %}
+                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                            {% endif %}
+
+                            {% if entry.model %}
+                            <span class="mini quiet">
+                                                {% filter capfirst %}
+                                                    {{ entry.model }}
+                                                {% endfilter %}
+                                            </span>
+                            {% endif %}
+                        </h3>
+                        {% if not entry.is_deletion %}
+                        <div class="timeline-body">
+                            {% if entry.is_addition %}
+                            {{ entry }}
+                            {% else %}
+                            <ul style="list-style: none; padding: 0;">
+                                {% action_message_to_list entry as action_message_list %}
+                                {% for action_message in action_message_list %}
+                                <li>{{ action_message.msg|style_bold_first_word }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+                <div>
+                    <i class="fa fa-clock bg-gray"></i>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

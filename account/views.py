@@ -15,7 +15,7 @@ from account.forms import CustomUserCreationForm, LoginForm, ChangePasswordForm,
 from account.models import CustomUser, Address
 from account.twilio import _send_otp, _verify_otp
 from orders.models import Order
-from products.models import Product, Cart, Wishlist
+from products.models import Product, Cart, Wishlist, Category, Brand
 
 
 class RegistrationView(CreateView):
@@ -208,3 +208,26 @@ class ChangePasswordView(PasswordChangeView):
 class ResetPasswordView(PasswordResetView):
     template_name = 'account/password_reset.html'
     form_class = ResetPasswordForm
+
+
+def dashboard(request):
+    users = CustomUser.objects.filter(is_staff=False, is_active=True).count()
+    orders = Order.objects.all().count()
+    brands = Brand.objects.all().count()
+    categories = Category.objects.all()
+    categories_count = categories.count()
+
+    products_dict = {}
+    for category in categories:
+        count = Product.objects.filter(category=category).count()
+        products_dict[category.title] = count
+
+    context = {
+        'title': 'Site administration',
+        'users': users,
+        'orders': orders,
+        'brands': brands,
+        'categories_count': categories_count,
+        'products': products_dict
+    }
+    return render(request, 'admin/custom_dashboard.html', context)

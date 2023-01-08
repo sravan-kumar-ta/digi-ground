@@ -23,8 +23,8 @@ class CustomUserAdmin(UserAdmin):
     )
 
     list_display = ('username', 'email', 'phone_number', 'is_active', 'is_staff')
+    list_filter = ('is_staff', 'is_active',)
     filter_horizontal = ()
-    list_filter = ()
 
 
 admin.site.register(get_user_model(), CustomUserAdmin)
