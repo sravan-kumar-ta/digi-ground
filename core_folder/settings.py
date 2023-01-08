@@ -16,9 +16,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'products',
     'account',
     'orders',
-
 ]
 
 MIDDLEWARE = [
@@ -154,6 +153,7 @@ TWILIO_VERIFY_SERVICE_SID = config('TWILIO_VERIFY_SERVICE_SID')
 # Custom admin panel settings
 JAZZMIN_SETTINGS = {
     "site_title": "Digi Ground Admin",
+    "site_brand": "Digital Ground",
     "default_icon_children": "fas fa-table",
     "site_icon": "img/favicon.png",
 }

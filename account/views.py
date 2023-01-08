@@ -231,3 +231,7 @@ def dashboard(request):
         'products': products_dict
     }
     return render(request, 'admin/custom_dashboard.html', context)
+
+
+def handle_not_fount(request, exception):
+    return render(request, 'error_404.html')
