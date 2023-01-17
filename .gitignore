@@ -1,4 +1,11 @@
+.idea
 venv
 db.sqlite3
 core_folder/.env
 media
+*.log
+*.pot
+*.pyc
+__pycache__/
+.Python
+.cache
