@@ -14,22 +14,20 @@
 * *Product filtering and sorting through **Ajax** with **pagination***
 * *Wishlist*
 * *Customized admin panel with [AdminLTE](https://django-jazzmin.readthedocs.io/)*
-***
 <br>
 
 ## Live Demonstration
 
 * ### Live Project -> [Digital Ground](http://3.6.86.26)
 * ### Screen Casting  -> [View 📺](https://www.linkedin.com/posts/sravankumarta_django-webdevelopment-djangodeveloper-activity-7020838489688596480-MPq7?utm_source=share&utm_medium=member_desktop)
-***
 <br>
 
 ## Getting Started
 
 * Clone this repo :
   ```
-  git clone https://github.com/sravan-kumar-ta/DigitalGround-Django_eKart.git
-  cd DigitalGround-Django_eKart
+  git clone https://github.com/sravan-kumar-ta/Digi_Ground-ecommerce-Django.git
+  cd Digi_Ground-ecommerce-Django
   ```
 * Create a virtual environment to install dependencies in and activate it:
 
