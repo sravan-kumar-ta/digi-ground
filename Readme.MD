@@ -1,4 +1,4 @@
-# Online Doctor
+# Digital Ground
 [![Up to Date](https://github.com/ikatyang/emoji-cheat-sheet/workflows/Up%20to%20Date/badge.svg)](https://github.com/ikatyang/emoji-cheat-sheet/actions?query=workflow%3A%22Up+to+Date%22)
 
 >This is a light-weight e-commerce application built on **Python Django**.
@@ -19,7 +19,7 @@
 
 ## Live Demonstration
 
-* ### Live Project -> [Digital Ground](http://3.6.86.26/)
+* ### Live Project -> [Digital Ground](http://3.6.86.26)
 * ### Screen Casting  -> [View 📺](https://www.linkedin.com/posts/sravankumarta_django-webdevelopment-djangodeveloper-activity-7020838489688596480-MPq7?utm_source=share&utm_medium=member_desktop)
 ***
 <br>
