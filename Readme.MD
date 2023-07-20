@@ -18,7 +18,6 @@
 
 ## Live Demonstration
 
-* ### Live Project -> [Digital Ground](http://3.6.86.26)
 * ### Screen Casting  -> [View 📺](https://www.linkedin.com/posts/sravankumarta_django-webdevelopment-djangodeveloper-activity-7020838489688596480-MPq7?utm_source=share&utm_medium=member_desktop)
 <br>
 
