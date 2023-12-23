@@ -82,6 +82,10 @@ DATABASES = {
         'PASSWORD': 'D61BA*FaC-cGA*CdAfE24A36FEDe1GDE',
         'HOST': 'viaduct.proxy.rlwy.net',
         'PORT': '51427',
+        # 'ENGINE': 'django.db.backends.postgresql',
+        # 'NAME': 'digital_ground_db',
+        # 'USER': 'digital_ground',
+        # 'PASSWORD': 'digi123',
     }
 }
 
