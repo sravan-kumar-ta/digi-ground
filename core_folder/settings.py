@@ -18,7 +18,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['.vercel.app', 'now.sh', '127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -77,9 +77,11 @@ WSGI_APPLICATION = 'core_folder.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'digital_ground_db',
-        'USER': 'digital_ground',
-        'PASSWORD': 'digi123',
+        'NAME': 'railway',
+        'USER': 'postgres',
+        'PASSWORD': 'D61BA*FaC-cGA*CdAfE24A36FEDe1GDE',
+        'HOST': 'viaduct.proxy.rlwy.net',
+        'PORT': '51427',
     }
 }
 
@@ -117,7 +119,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles_build', 'static')
 
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static'), ]
 
